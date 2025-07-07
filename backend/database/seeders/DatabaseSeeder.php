@@ -18,5 +18,10 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+        
+        // Run Pomodoro seeder for comprehensive API testing
+        $this->call([
+            PomodoroSeeder::class,
+        ]);
     }
 }

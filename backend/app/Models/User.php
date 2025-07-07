@@ -46,4 +46,14 @@ class User extends Authenticatable
     public function studyLogs() {
         return $this->hasMany(StudyLog::class);
     }
+
+    public function pomodoroSessions()
+    {
+        return $this->hasMany(PomodoroSession::class);
+    }
+
+    public function pomodoroSettings()
+    {
+        return $this->hasOne(UserPomodoroSettings::class);
+    }
 }
