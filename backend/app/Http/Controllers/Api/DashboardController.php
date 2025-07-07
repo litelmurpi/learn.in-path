@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\StudyLog;
+use App\Models\PomodoroSession;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +28,9 @@ class DashboardController extends Controller
             // Get today's sessions count
             $sessionsToday = $this->getSessionsToday($userId);
             
+            // Get pomodoro statistics
+            $pomodoroStats = $this->getPomodoroStats($userId);
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Dashboard stats retrieved successfully',
@@ -37,7 +41,8 @@ class DashboardController extends Controller
                         'hours' => round($totalTimeThisMonth / 60, 1),
                         'formatted' => $this->formatDuration($totalTimeThisMonth)
                     ],
-                    'sessions_today' => $sessionsToday
+                    'sessions_today' => $sessionsToday,
+                    'pomodoro' => $pomodoroStats
                 ]
             ], 200);
         } catch (\Exception $e) {
@@ -306,5 +311,67 @@ class DashboardController extends Controller
         }
         
         return $streak;
+    }
+    
+    /**
+     * Get pomodoro statistics
+     */
+    private function getPomodoroStats(int $userId): array
+    {
+        $today = Carbon::today();
+        $thisWeek = [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()];
+        $thisMonth = [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()];
+        
+        return [
+            'today' => [
+                'total_sessions' => PomodoroSession::where('user_id', $userId)->today()->count(),
+                'completed_sessions' => PomodoroSession::where('user_id', $userId)->today()->completed()->count(),
+                'focus_time' => PomodoroSession::where('user_id', $userId)->today()->completed()->where('session_type', 'work')->sum('actual_duration') ?? 0,
+                'active_session' => PomodoroSession::where('user_id', $userId)->whereIn('status', ['active', 'paused'])->exists()
+            ],
+            'this_week' => [
+                'total_sessions' => PomodoroSession::where('user_id', $userId)->thisWeek()->count(),
+                'completed_sessions' => PomodoroSession::where('user_id', $userId)->thisWeek()->completed()->count(),
+                'focus_time' => PomodoroSession::where('user_id', $userId)->thisWeek()->completed()->where('session_type', 'work')->sum('actual_duration') ?? 0
+            ],
+            'this_month' => [
+                'total_sessions' => PomodoroSession::where('user_id', $userId)->thisMonth()->count(),
+                'completed_sessions' => PomodoroSession::where('user_id', $userId)->thisMonth()->completed()->count(),
+                'focus_time' => PomodoroSession::where('user_id', $userId)->thisMonth()->completed()->where('session_type', 'work')->sum('actual_duration') ?? 0
+            ],
+            'completion_rate' => $this->calculatePomodoroCompletionRate($userId),
+            'average_session_duration' => $this->getAverageSessionDuration($userId)
+        ];
+    }
+    
+    /**
+     * Calculate pomodoro completion rate
+     */
+    private function calculatePomodoroCompletionRate(int $userId): float
+    {
+        $totalSessions = PomodoroSession::where('user_id', $userId)
+            ->whereIn('status', ['completed', 'cancelled'])
+            ->count();
+        
+        $completedSessions = PomodoroSession::where('user_id', $userId)
+            ->where('status', 'completed')
+            ->count();
+        
+        if ($totalSessions === 0) {
+            return 0;
+        }
+        
+        return round(($completedSessions / $totalSessions) * 100, 1);
+    }
+    
+    /**
+     * Get average session duration
+     */
+    private function getAverageSessionDuration(int $userId): int
+    {
+        return PomodoroSession::where('user_id', $userId)
+            ->completed()
+            ->where('session_type', 'work')
+            ->avg('actual_duration') ?? 0;
     }
 }

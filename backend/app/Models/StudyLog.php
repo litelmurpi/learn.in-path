@@ -29,4 +29,18 @@ class StudyLog extends Model
     public function user() {
         return $this->belongsTo(User::class);
     }
+
+    public function pomodoroSessions()
+    {
+        return $this->hasMany(PomodoroSession::class);
+    }
+
+    // Calculate total focus time from pomodoro sessions
+    public function getTotalFocusTimeFromPomodoro(): int
+    {
+        return $this->pomodoroSessions()
+            ->completed()
+            ->where('session_type', 'work')
+            ->sum('actual_duration');
+    }
 }

@@ -46,4 +46,60 @@ class User extends Authenticatable
     public function studyLogs() {
         return $this->hasMany(StudyLog::class);
     }
+
+    public function pomodoroSessions()
+    {
+        return $this->hasMany(PomodoroSession::class);
+    }
+
+    public function pomodoroSettings()
+    {
+        return $this->hasOne(UserPomodoroSetting::class);
+    }
+
+    // Helper method to get pomodoro statistics
+    public function getPomodoroStatistics(): array
+    {
+        $sessions = $this->pomodoroSessions()->completed()->get();
+        
+        return [
+            'total_sessions' => $sessions->count(),
+            'total_focus_time' => $sessions->where('session_type', 'work')->sum('actual_duration'),
+            'average_session_length' => $sessions->where('session_type', 'work')->avg('actual_duration') ?? 0,
+            'completion_rate' => $this->calculateCompletionRate(),
+            'current_streak' => $this->calculateCurrentStreak(),
+        ];
+    }
+
+    private function calculateCompletionRate(): float
+    {
+        $totalSessions = $this->pomodoroSessions()->whereIn('status', ['completed', 'cancelled'])->count();
+        $completedSessions = $this->pomodoroSessions()->completed()->count();
+        
+        if ($totalSessions === 0) {
+            return 0;
+        }
+        
+        return ($completedSessions / $totalSessions) * 100;
+    }
+
+    private function calculateCurrentStreak(): int
+    {
+        $recentSessions = $this->pomodoroSessions()
+            ->where('session_type', 'work')
+            ->orderBy('started_at', 'desc')
+            ->limit(10)
+            ->get();
+        
+        $streak = 0;
+        foreach ($recentSessions as $session) {
+            if ($session->status === 'completed') {
+                $streak++;
+            } else {
+                break;
+            }
+        }
+        
+        return $streak;
+    }
 }
