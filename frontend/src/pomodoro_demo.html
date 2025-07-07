@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dasbor | Learn.in Path</title>
+    <title>Pomodoro Timer Demo | Learn.in Path</title>
 
     <!-- Memuat Font Inter dari Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -698,12 +698,50 @@
     </script>
 
     <script type="module">
-      import { displayUserInfo } from "./userInfo.js";
-      // Display user info when page loads
-      displayUserInfo();
+      // Demo version - skip auth check
+      console.log('Demo mode - authentication skipped');
     </script>
 
-    <script type="module" src="./dashboard.js"></script>
-    <script type="module" src="./pomodoro.js"></script>
+    <!-- Demo dashboard script without auth -->
+    <script type="module">
+      // Simplified demo without API calls
+      document.addEventListener("DOMContentLoaded", () => {
+        // Set demo greeting
+        const greeting = document.querySelector('.greeting');
+        if (greeting) {
+          greeting.textContent = 'Selamat datang di demo Pomodoro Timer!';
+        }
+        
+        // Set demo stats
+        const statCards = document.querySelectorAll('.stat-card .text-3xl');
+        if (statCards.length >= 3) {
+          statCards[0].textContent = '5 Hari';
+          statCards[1].textContent = '12 jam';
+          statCards[2].textContent = '3 sesi';
+        }
+        
+        // Load demo recent activities
+        const activities = document.getElementById('recentActivities');
+        if (activities) {
+          activities.innerHTML = `
+            <div class="activity-item">
+              <div class="flex-shrink-0 bg-white text-navy rounded-full w-8 h-8 flex items-center justify-center font-bold">M</div>
+              <div class="flex-grow">
+                <p class="font-semibold">Matematika</p>
+                <p class="text-sm opacity-80">45 menit • Hari ini</p>
+              </div>
+            </div>
+            <div class="activity-item">
+              <div class="flex-shrink-0 bg-white text-navy rounded-full w-8 h-8 flex items-center justify-center font-bold">F</div>
+              <div class="flex-grow">
+                <p class="font-semibold">Fisika</p>
+                <p class="text-sm opacity-80">30 menit • Kemarin</p>
+              </div>
+            </div>
+          `;
+        }
+      });
+    </script>
+    <script type="module" src="./pomodoro_demo.js"></script>
   </body>
 </html>
