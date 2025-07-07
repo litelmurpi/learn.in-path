@@ -1,0 +1,557 @@
+{
+    "info": {
+        "name": "Pomodoro API Test Collection",
+        "description": "Comprehensive test collection for Pomodoro API endpoints using seeded data",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:8000/api",
+            "type": "string"
+        },
+        {
+            "key": "token",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "userId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "sessionId",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{token}}",
+                "type": "string"
+            }
+        ]
+    },
+    "item": [
+        {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "Login - Morning Person",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Token received\", function () {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.expect(response).to.have.property('token');",
+                                    "    pm.environment.set('token', response.token);",
+                                    "    if (response.user) {",
+                                    "        pm.environment.set('userId', response.user.id);",
+                                    "    }",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"morning.person@example.com\",\n    \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/login",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["login"]
+                        }
+                    }
+                },
+                {
+                    "name": "Login - Night Owl",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"night.owl@example.com\",\n    \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/login",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["login"]
+                        }
+                    }
+                },
+                {
+                    "name": "Login - Consistent User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"consistent.user@example.com\",\n    \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/login",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["login"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Session Management",
+            "item": [
+                {
+                    "name": "Get Active Session",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Response structure\", function () {",
+                                    "    const response = pm.response.json();",
+                                    "    if (response.data) {",
+                                    "        pm.environment.set('sessionId', response.data.id);",
+                                    "        pm.expect(response.data).to.have.property('session_type');",
+                                    "        pm.expect(response.data).to.have.property('status');",
+                                    "        pm.expect(response.data).to.have.property('duration_minutes');",
+                                    "    }",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/pomodoro/active",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["pomodoro", "active"]
+                        }
+                    }
+                },
+                {
+                    "name": "Start New Session",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 201 or 409\", function () {",
+                                    "    pm.expect([201, 409]).to.include(pm.response.code);",
+                                    "});",
+                                    "",
+                                    "if (pm.response.code === 201) {",
+                                    "    pm.test(\"Session created\", function () {",
+                                    "        const response = pm.response.json();",
+                                    "        pm.expect(response.data).to.have.property('id');",
+                                    "        pm.environment.set('sessionId', response.data.id);",
+                                    "    });",
+                                    "}"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"session_type\": \"work\",\n    \"duration_minutes\": 25\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/pomodoro/start",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["pomodoro", "start"]
+                        }
+                    }
+                },
+                {
+                    "name": "Pause Session",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Session paused\", function () {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.expect(response.data.status).to.eql('paused');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/pomodoro/{{sessionId}}/pause",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["pomodoro", "{{sessionId}}", "pause"]
+                        }
+                    }
+                },
+                {
+                    "name": "Resume Session",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Session resumed\", function () {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.expect(response.data.status).to.eql('active');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/pomodoro/{{sessionId}}/resume",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["pomodoro", "{{sessionId}}", "resume"]
+                        }
+                    }
+                },
+                {
+                    "name": "Complete Session",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Session completed\", function () {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.expect(response.data.status).to.eql('completed');",
+                                    "    pm.expect(response.data).to.have.property('completed_at');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/pomodoro/{{sessionId}}/complete",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["pomodoro", "{{sessionId}}", "complete"]
+                        }
+                    }
+                },
+                {
+                    "name": "Cancel Session",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Session cancelled\", function () {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.expect(response.data.status).to.eql('cancelled');",
+                                    "    pm.expect(response.data).to.have.property('cancelled_at');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/pomodoro/{{sessionId}}/cancel",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["pomodoro", "{{sessionId}}", "cancel"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Data Retrieval",
+            "item": [
+                {
+                    "name": "Get Session History",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"History data structure\", function () {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.expect(response).to.have.property('data');",
+                                    "    if (response.data.length > 0) {",
+                                    "        pm.expect(response.data[0]).to.have.property('session_type');",
+                                    "        pm.expect(response.data[0]).to.have.property('status');",
+                                    "        pm.expect(response.data[0]).to.have.property('started_at');",
+                                    "    }",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/pomodoro/history?limit=10&days=7",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["pomodoro", "history"],
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                },
+                                {
+                                    "key": "days",
+                                    "value": "7"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Statistics",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Statistics structure\", function () {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.expect(response.data).to.have.property('total_sessions');",
+                                    "    pm.expect(response.data).to.have.property('completed_sessions');",
+                                    "    pm.expect(response.data).to.have.property('total_focus_time');",
+                                    "    pm.expect(response.data).to.have.property('average_session_length');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/pomodoro/statistics?period=month",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["pomodoro", "statistics"],
+                            "query": [
+                                {
+                                    "key": "period",
+                                    "value": "month"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Settings Management",
+            "item": [
+                {
+                    "name": "Get User Settings",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Settings structure\", function () {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.expect(response.data).to.have.property('work_duration');",
+                                    "    pm.expect(response.data).to.have.property('short_break_duration');",
+                                    "    pm.expect(response.data).to.have.property('long_break_duration');",
+                                    "    pm.expect(response.data).to.have.property('timezone');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/pomodoro/settings",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["pomodoro", "settings"]
+                        }
+                    }
+                },
+                {
+                    "name": "Update User Settings",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Settings updated\", function () {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.expect(response.data.work_duration).to.eql(30);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"work_duration\": 30,\n    \"short_break_duration\": 7,\n    \"long_break_duration\": 20,\n    \"auto_start_breaks\": true,\n    \"notification_enabled\": true\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/pomodoro/settings",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["pomodoro", "settings"]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Error Scenarios",
+            "item": [
+                {
+                    "name": "Start Session When Active Exists",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 409 (Conflict)\", function () {",
+                                    "    pm.response.to.have.status(409);",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Error message\", function () {",
+                                    "    const response = pm.response.json();",
+                                    "    pm.expect(response).to.have.property('message');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"session_type\": \"work\",\n    \"duration_minutes\": 25\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/pomodoro/start",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["pomodoro", "start"]
+                        }
+                    }
+                },
+                {
+                    "name": "Access Non-existent Session",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 404\", function () {",
+                                    "    pm.response.to.have.status(404);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "url": {
+                            "raw": "{{baseUrl}}/pomodoro/99999/pause",
+                            "host": ["{{baseUrl}}"],
+                            "path": ["pomodoro", "99999", "pause"]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
