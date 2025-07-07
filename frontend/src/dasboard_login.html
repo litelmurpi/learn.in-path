@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dasbor | Learn.in Path</title>
+
+    <!-- Memuat Font Inter dari Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Memuat file CSS yang dihasilkan Tailwind -->
+    <link href="../dist/output.css" rel="stylesheet" />
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #e8e8e8;
+      }
+      .bg-navy {
+        background-color: #1e3a5f;
+      }
+      .text-navy {
+        color: #1e3a5f;
+      }
+      .btn-navy {
+        background-color: #1e3a5f;
+        color: white;
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      .btn-navy:hover {
+        background-color: #152d4a;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .card {
+        background-color: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+      .stat-card {
+        background-color: #1e3a5f;
+        color: white;
+        padding: 24px;
+        border-radius: 12px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .activity-item {
+        background-color: #1e3a5f;
+        color: white;
+        padding: 16px 20px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+        transition: transform 0.2s ease;
+      }
+      .activity-item:hover {
+        transform: translateX(4px);
+      }
+      .calendar-day {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+      }
+      .calendar-day:hover {
+        transform: scale(1.1);
+        z-index: 10;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+      .calendar-day.ring-2 {
+        box-shadow: 0 0 0 2px #1e3a5f;
+      }
+      .profile-circle {
+        width: 120px;
+        height: 120px;
+        background-color: #1e3a5f;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      /* Modal styles */
+      .modal-transition {
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+      }
+      .modal-content-transition {
+        transition: transform 0.3s ease;
+      }
+      /* Loading animation */
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #f3f3f3;
+        border-radius: 50%;
+        border-top-color: #1e3a5f;
+        animation: spin 1s ease-in-out infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      /* Calendar navigation buttons */
+      .calendar-nav-btn {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        background-color: #f3f4f6;
+      }
+      .calendar-nav-btn:hover {
+        background-color: #e5e7eb;
+      }
+      .calendar-today-btn {
+        padding: 6px 12px;
+        background-color: #1e3a5f;
+        color: white;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+      }
+      .calendar-today-btn:hover {
+        background-color: #152d4a;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="bg-navy text-white">
+      <div class="container mx-auto px-4 py-4">
+        <nav class="flex justify-between items-center">
+          <h1 class="text-xl font-semibold">Learn.in Path</h1>
+
+          <div class="flex items-center gap-8">
+            <a href="#" class="hover:opacity-80 transition">Dasbor</a>
+            <a href="#" class="hover:opacity-80 transition">Laporan</a>
+            <a href="#" class="hover:opacity-80 transition">Pengaturan</a>
+
+            <div class="flex items-center gap-4">
+              <!-- Notification Icon -->
+              <button class="hover:opacity-80 transition">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                  />
+                </svg>
+              </button>
+
+              <!-- Profile Icon -->
+              <button
+                class="w-10 h-10 bg-white rounded-full flex items-center justify-center"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6 text-navy"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+              </button>
+
+              <!-- Logout Button -->
+              <button
+                id="logoutButton"
+                class="hover:opacity-80 transition"
+                title="Logout"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+      <!-- Greeting -->
+      <div class="mb-6">
+        <h2 class="greeting text-2xl font-semibold text-navy"></h2>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <!-- Left Sidebar -->
+        <aside class="lg:col-span-1 space-y-6">
+          <!-- Catat Sesi Card -->
+          <div class="card">
+            <h2 class="text-xl font-bold text-navy mb-2">Catat Sesi Anda</h2>
+            <p class="text-gray-600 text-sm mb-4">
+              Catat detail sesi belajar Anda.
+            </p>
+            <div class="flex items-center justify-between">
+              <button id="openModalBtn" class="btn-navy">Mulai!</button>
+              <div class="profile-circle">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-16 w-16 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Aktivitas Terkini -->
+          <div class="card">
+            <h3 class="text-lg font-bold text-navy mb-4">Aktivitas Terkini</h3>
+            <div id="recentActivities">
+              <div class="text-center py-4">
+                <div class="loading mx-auto"></div>
+                <p class="text-gray-500 mt-2">Memuat aktivitas...</p>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <section class="lg:col-span-3 space-y-6">
+          <h1 class="text-3xl font-bold text-navy">Dasbor</h1>
+
+          <!-- Statistics Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="stat-card">
+              <p class="text-sm opacity-80 mb-2">Runtutan Terpanjang 🔥</p>
+              <p class="text-3xl font-bold">0 Hari</p>
+            </div>
+            <div class="stat-card">
+              <p class="text-sm opacity-80 mb-2">Total Waktu Bulan Ini</p>
+              <p class="text-3xl font-bold">0 jam</p>
+            </div>
+            <div class="stat-card">
+              <p class="text-sm opacity-80 mb-2">Sesi Hari Ini</p>
+              <p class="text-3xl font-bold">0 jam</p>
+            </div>
+          </div>
+
+          <!-- Calendar/Heatmap -->
+          <div class="card">
+            <h3 class="text-xl font-bold text-navy mb-6">Intensitas Belajar</h3>
+
+            <!-- Month Navigation -->
+            <div class="calendar-header">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                  <button class="calendar-nav-btn calendar-nav-prev">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                  </button>
+                  <button class="calendar-nav-btn calendar-nav-next">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <h4 class="text-lg font-semibold text-navy">Loading...</h4>
+                <button class="calendar-today-btn">Hari Ini</button>
+              </div>
+              <!-- Current date info will be added here by JavaScript -->
+            </div>
+
+            <!-- Calendar Grid -->
+            <div class="grid grid-cols-7 gap-2 text-center">
+              <!-- Days of week -->
+              <div class="text-sm font-semibold text-gray-600 py-2">Sen</div>
+              <div class="text-sm font-semibold text-gray-600 py-2">Sel</div>
+              <div class="text-sm font-semibold text-gray-600 py-2">Rab</div>
+              <div class="text-sm font-semibold text-gray-600 py-2">Kam</div>
+              <div class="text-sm font-semibold text-gray-600 py-2">Jum</div>
+              <div class="text-sm font-semibold text-gray-600 py-2">Sab</div>
+              <div class="text-sm font-semibold text-gray-600 py-2">Min</div>
+
+              <!-- Calendar days will be rendered here -->
+              <div
+                id="heatmapCalendar"
+                class="col-span-7 grid grid-cols-7 gap-2"
+              >
+                <!-- Calendar days will be dynamically generated -->
+              </div>
+            </div>
+
+            <!-- Month statistics will be added here by JavaScript -->
+
+            <!-- Legend -->
+            <div
+              class="mt-6 flex items-center justify-center gap-4 text-sm text-gray-600"
+            >
+              <span>Kurang</span>
+              <div class="flex gap-1">
+                <div
+                  class="w-4 h-4 rounded"
+                  style="background-color: #f3f4f6"
+                  title="0 menit"
+                ></div>
+                <div
+                  class="w-4 h-4 rounded"
+                  style="background-color: #86efac"
+                  title="< 1 jam"
+                ></div>
+                <div
+                  class="w-4 h-4 rounded"
+                  style="background-color: #4ade80"
+                  title="1-3 jam"
+                ></div>
+                <div
+                  class="w-4 h-4 rounded"
+                  style="background-color: #22c55e"
+                  title="3-5 jam"
+                ></div>
+                <div
+                  class="w-4 h-4 rounded"
+                  style="background-color: #16a34a"
+                  title="> 5 jam"
+                ></div>
+              </div>
+              <span>Lebih</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Modal Section -->
+    <div
+      id="sessionModal"
+      class="modal-transition fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 invisible opacity-0"
+    >
+      <div
+        id="modalContent"
+        class="modal-content-transition bg-white rounded-2xl shadow-xl p-8 w-full max-w-lg m-4 relative transform scale-95"
+      >
+        <!-- Close Button -->
+        <button
+          id="closeModalBtn"
+          class="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-8 w-8"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+
+        <h2 class="text-2xl font-bold text-navy mb-6">
+          Catat waktu belajarmu disini
+        </h2>
+
+        <!-- Form -->
+        <form id="sessionForm" class="space-y-5">
+          <div>
+            <label
+              for="topic"
+              class="block text-md font-medium text-gray-700 mb-1"
+              >Topik Pembelajaran</label
+            >
+            <input
+              type="text"
+              id="topic"
+              name="topic"
+              placeholder="Contoh: Belajar DDL, DML"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              required
+            />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label
+                for="hours"
+                class="block text-md font-medium text-gray-700 mb-1"
+                >Jam</label
+              >
+              <input
+                type="number"
+                id="hours"
+                name="hours"
+                value="0"
+                min="0"
+                max="24"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                required
+              />
+            </div>
+            <div>
+              <label
+                for="minutes"
+                class="block text-md font-medium text-gray-700 mb-1"
+                >Menit</label
+              >
+              <input
+                type="number"
+                id="minutes"
+                name="minutes"
+                value="0"
+                min="0"
+                max="59"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                required
+              />
+            </div>
+          </div>
+
+          <div>
+            <label
+              for="date"
+              class="block text-md font-medium text-gray-700 mb-1"
+              >Tanggal</label
+            >
+            <input
+              type="date"
+              id="date"
+              name="date"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              required
+            />
+          </div>
+
+          <div>
+            <label
+              for="notes"
+              class="block text-md font-medium text-gray-700 mb-1"
+              >Catatan</label
+            >
+            <textarea
+              id="notes"
+              name="notes"
+              rows="4"
+              placeholder="next belajar DCL"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            ></textarea>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex justify-end space-x-3 pt-4">
+            <button
+              type="button"
+              id="cancelModalBtn"
+              class="bg-gray-200 text-gray-700 font-semibold px-6 py-2 rounded-lg hover:bg-gray-300 transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              class="bg-navy text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-800 transition"
+            >
+              Simpan Sesi
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- JavaScript for Modal -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const openModalBtn = document.getElementById("openModalBtn");
+        const sessionModal = document.getElementById("sessionModal");
+        const modalContent = document.getElementById("modalContent");
+        const closeModalBtn = document.getElementById("closeModalBtn");
+        const cancelModalBtn = document.getElementById("cancelModalBtn");
+
+        // Set default date to today
+        const dateInput = document.getElementById("date");
+        dateInput.valueAsDate = new Date();
+
+        const openModal = () => {
+          sessionModal.classList.remove("invisible");
+          sessionModal.classList.add("visible");
+          sessionModal.classList.remove("opacity-0");
+          sessionModal.classList.add("opacity-100");
+          modalContent.classList.remove("scale-95");
+          modalContent.classList.add("scale-100");
+        };
+
+        const closeModal = () => {
+          sessionModal.classList.remove("opacity-100");
+          sessionModal.classList.add("opacity-0");
+          modalContent.classList.remove("scale-100");
+          modalContent.classList.add("scale-95");
+          setTimeout(() => {
+            sessionModal.classList.remove("visible");
+            sessionModal.classList.add("invisible");
+          }, 300);
+        };
+
+        openModalBtn.addEventListener("click", openModal);
+        closeModalBtn.addEventListener("click", closeModal);
+        cancelModalBtn.addEventListener("click", closeModal);
+
+        // Close modal when clicking on the backdrop
+        sessionModal.addEventListener("click", (event) => {
+          if (event.target === sessionModal) {
+            closeModal();
+          }
+        });
+      });
+    </script>
+
+    <script type="module">
+      import { displayUserInfo } from "./userInfo.js";
+      // Display user info when page loads
+      displayUserInfo();
+    </script>
+
+    <script type="module" src="./dashboard.js"></script>
+  </body>
+</html>

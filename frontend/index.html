@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Learn.in Path - Visualisasikan Konsistensi Belajar Anda</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #f0f2f5; /* Warna latar belakang abu-abu muda */
+      }
+      .bg-dark-blue {
+        background-color: #1a2a45; /* Warna header biru gelap */
+      }
+      .btn-primary {
+        background-color: #3b82f6; /* Warna tombol biru */
+        color: white;
+      }
+      .btn-primary:hover {
+        background-color: #2563eb;
+      }
+      .btn-secondary {
+        background-color: white;
+        color: #1a2a45;
+        border: 1px solid #e5e7eb;
+      }
+      .btn-secondary:hover {
+        background-color: #f9fafb;
+      }
+      .feature-card {
+        background-color: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 1rem;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+      }
+      .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+      }
+    </style>
+  </head>
+  <body class="text-gray-800">
+    <header class="bg-dark-blue sticky top-0 z-50">
+      <nav
+        class="container mx-auto px-6 py-4 flex justify-between items-center"
+      >
+        <div>
+          <a href="/" class="text-white text-2xl font-bold">Learn.in Path</a>
+        </div>
+        <div class="flex items-center space-x-4">
+          <a
+            href="./src/signUp.html"
+            class="btn-primary px-6 py-2 rounded-lg font-semibold"
+            >Daftar</a
+          >
+          <a
+            href="./src/login.html"
+            class="btn-secondary px-6 py-2 rounded-lg font-semibold"
+            >Masuk</a
+          >
+        </div>
+      </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-20">
+      <section class="grid md:grid-cols-2 gap-12 items-center">
+        <div class="flex justify-center">
+          <img
+            src="https://i.imgur.com/eBwF99P.png"
+            alt="Dashboard Learn.in Path"
+            class="rounded-lg shadow-2xl max-w-full h-auto"
+          />
+        </div>
+
+        <div class="text-center md:text-left">
+          <h1
+            class="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight"
+          >
+            Visualisasikan Konsistensi Anda, Bangun Disiplin Anda.
+          </h1>
+          <p class="mt-6 text-lg text-gray-600">
+            Learn.in Path adalah jurnal pembelajaran digital yang mengubah upaya
+            harian Anda menjadi peta panas yang indah dan memotivasi, membantu
+            Anda membangun kebiasaan belajar yang ampuh.
+          </p>
+          <div class="mt-8">
+            <a
+              href="./src/signUp.html"
+              class="btn-primary text-lg font-semibold px-8 py-4 rounded-lg inline-block transition-transform transform hover:scale-105"
+            >
+              Mulai Melacak Secara Gratis
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="py-24">
+        <h2 class="text-3xl font-bold text-center mb-4">
+          Bagaimana Learn.in Path Membantu Anda
+        </h2>
+        <div class="grid md:grid-cols-2 gap-12 items-center mt-12">
+          <div class="space-y-10">
+            <div>
+              <h3 class="text-2xl font-bold mb-2">Log dengan Mudah</h3>
+              <p class="text-gray-600">
+                Rekam setiap sesi pembelajaran dalam hitungan detik.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold mb-2">
+                Visualisasikan Rentetan Kemenangan Anda
+              </h3>
+              <p class="text-gray-600">
+                Lihat jejak konsistensi Anda melalui peta panas yang intuitif.
+              </p>
+            </div>
+            <div>
+              <h3 class="text-2xl font-bold mb-2">Tetap Termotivasi</h3>
+              <p class="text-gray-600">
+                Ubahlah usaha abstrak menjadi bukti nyata kerja keras Anda.
+              </p>
+            </div>
+          </div>
+
+          <div class="space-y-6">
+            <div class="feature-card">
+              <i class="fas fa-bullseye text-4xl text-blue-500"></i>
+            </div>
+            <div class="feature-card">
+              <i class="fas fa-calendar-alt text-4xl text-blue-500"></i>
+            </div>
+            <div class="feature-card">
+              <i class="fas fa-lightbulb text-4xl text-blue-500"></i>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="bg-white rounded-2xl shadow-xl p-12 text-center">
+        <h2 class="text-3xl font-bold mb-4">
+          Siap Membangun Kebiasaan Belajar Anda?
+        </h2>
+        <div class="mt-6">
+          <a
+            href="#"
+            class="btn-primary text-lg font-semibold px-8 py-4 rounded-lg inline-block transition-transform transform hover:scale-105"
+          >
+            Daftar Gratis
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bg-dark-blue text-white mt-20">
+      <div class="container mx-auto px-6 py-8 text-center">
+        <p>&copy; 2025 Learn.in Path. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      // JavaScript bisa ditambahkan di sini untuk interaktivitas
+      // Misalnya, untuk menangani menu mobile atau animasi saat scroll
+      console.log("Landing page Learn.in Path dimuat!");
+    </script>
+  </body>
+</html>
