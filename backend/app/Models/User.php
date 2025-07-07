@@ -46,4 +46,26 @@ class User extends Authenticatable
     public function studyLogs() {
         return $this->hasMany(StudyLog::class);
     }
+
+    public function pomodoroSessions()
+{
+    return $this->hasMany(PomodoroSession::class);
+}
+
+public function pomodoroSettings()
+{
+    return $this->hasOne(PomodoroSettings::class);
+}
+
+public function activePomodoroSession()
+{
+    return $this->hasOne(PomodoroSession::class)
+                ->where('status', PomodoroSession::STATUS_ACTIVE);
+}
+
+// Method untuk mendapatkan atau membuat settings
+public function getPomodoroSettings()
+{
+    return $this->pomodoroSettings ?? PomodoroSettings::getOrCreateForUser($this->id);
+}
 }
