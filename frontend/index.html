@@ -35,26 +35,15 @@
         background-color: #2563eb;
       }
       .btn-secondary {
-        background-color: white;
-        color: #1a2a45;
-        border: 1px solid #e5e7eb;
+        /* Diperbarui agar sesuai dengan desain */
+        background-color: #1a2a45;
+        color: white;
+        border: 1px solid #3b82f6;
       }
       .btn-secondary:hover {
-        background-color: #f9fafb;
+        background-color: #25395f;
       }
-      .feature-card {
-        background-color: #ffffff;
-        border: 1px solid #e5e7eb;
-        border-radius: 1rem;
-        padding: 2rem;
-        text-align: center;
-        transition: all 0.3s ease;
-      }
-      .feature-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-          0 4px 6px -4px rgb(0 0 0 / 0.1);
-      }
+      /* Kelas feature-card tidak lagi digunakan untuk ikon, dihapus untuk kebersihan */
     </style>
   </head>
   <body class="text-gray-800">
@@ -68,12 +57,12 @@
         <div class="flex items-center space-x-4">
           <a
             href="./src/signUp.html"
-            class="btn-primary px-6 py-2 rounded-lg font-semibold"
+            class="btn-secondary px-6 py-2 rounded-lg font-semibold"
             >Daftar</a
           >
           <a
             href="./src/login.html"
-            class="btn-secondary px-6 py-2 rounded-lg font-semibold"
+            class="btn-primary px-6 py-2 rounded-lg font-semibold"
             >Masuk</a
           >
         </div>
@@ -84,9 +73,10 @@
       <section class="grid md:grid-cols-2 gap-12 items-center">
         <div class="flex justify-center">
           <img
-            src="https://i.imgur.com/eBwF99P.png"
+            src="dist/asset/Business_Proposal_Presentation_1.png"
             alt="Dashboard Learn.in Path"
             class="rounded-lg shadow-2xl max-w-full h-auto"
+            style="max-width: 600px; max-height: 400px;"
           />
         </div>
 
@@ -116,40 +106,42 @@
         <h2 class="text-3xl font-bold text-center mb-4">
           Bagaimana Learn.in Path Membantu Anda
         </h2>
-        <div class="grid md:grid-cols-2 gap-12 items-center mt-12">
-          <div class="space-y-10">
-            <div>
-              <h3 class="text-2xl font-bold mb-2">Log dengan Mudah</h3>
-              <p class="text-gray-600">
-                Rekam setiap sesi pembelajaran dalam hitungan detik.
-              </p>
-            </div>
-            <div>
-              <h3 class="text-2xl font-bold mb-2">
-                Visualisasikan Rentetan Kemenangan Anda
-              </h3>
-              <p class="text-gray-600">
-                Lihat jejak konsistensi Anda melalui peta panas yang intuitif.
-              </p>
-            </div>
-            <div>
-              <h3 class="text-2xl font-bold mb-2">Tetap Termotivasi</h3>
-              <p class="text-gray-600">
-                Ubahlah usaha abstrak menjadi bukti nyata kerja keras Anda.
-              </p>
-            </div>
+        <div class="grid md:grid-cols-3 gap-12 items-start mt-12">
+          <!-- Fitur 1 -->
+          <div class="flex flex-col items-center text-center space-y-4">
+            <img 
+              src="dist/asset/Depth 6, Frame 1.png" 
+              alt="Ikon Log dengan Mudah" 
+              class="w-full max-w-[220px] rounded-2xl shadow-md"
+            />
+            <h3 class="text-2xl font-bold mb-2 mt-4">Log dengan Mudah</h3>
+            <p class="text-gray-600">
+              Rekam setiap sesi pembelajaran dalam hitungan detik.
+            </p>
           </div>
-
-          <div class="space-y-6">
-            <div class="feature-card">
-              <i class="fas fa-bullseye text-4xl text-blue-500"></i>
-            </div>
-            <div class="feature-card">
-              <i class="fas fa-calendar-alt text-4xl text-blue-500"></i>
-            </div>
-            <div class="feature-card">
-              <i class="fas fa-lightbulb text-4xl text-blue-500"></i>
-            </div>
+          <!-- Fitur 2 -->
+          <div class="flex flex-col items-center text-center space-y-4">
+            <img 
+              src="dist/asset/Depth 6, Frame 2.png" 
+              alt="Ikon Visualisasikan Rentetan" 
+              class="w-full max-w-[220px] rounded-2xl shadow-md"
+            />
+            <h3 class="text-2xl font-bold mb-2 mt-4">Visualisasikan Rentetan Kemenangan Anda</h3>
+            <p class="text-gray-600">
+              Lihat jejak konsistensi Anda melalui peta panas yang intuitif.
+            </p>
+          </div>
+          <!-- Fitur 3 -->
+          <div class="flex flex-col items-center text-center space-y-4">
+            <img 
+              src="dist/asset/Depth 6, Frame 2 (1).png" 
+              alt="Ikon Tetap Termotivasi" 
+              class="w-full max-w-[220px] rounded-2xl shadow-md"
+            />
+            <h3 class="text-2xl font-bold mb-2 mt-4">Tetap Termotivasi</h3>
+            <p class="text-gray-600">
+              Ubahlah usaha abstrak menjadi bukti nyata kerja keras Anda.
+            </p>
           </div>
         </div>
       </section>
@@ -176,9 +168,32 @@
     </footer>
 
     <script>
-      // JavaScript bisa ditambahkan di sini untuk interaktivitas
-      // Misalnya, untuk menangani menu mobile atau animasi saat scroll
-      console.log("Landing page Learn.in Path dimuat!");
+      // Alert saat tombol "Daftar Gratis" diklik
+      document.querySelectorAll('.btn-primary').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          if (this.textContent.includes('Daftar Gratis')) {
+            e.preventDefault();
+            alert('Terima kasih sudah tertarik! Fitur pendaftaran akan segera hadir.');
+          }
+        });
+      });
+
+      // Animasi hover pada gambar fitur
+      document.querySelectorAll('section .rounded-2xl.shadow-md').forEach(img => {
+        img.addEventListener('mouseenter', function() {
+          this.style.transform = 'scale(1.07)';
+          this.style.transition = 'transform 0.3s';
+        });
+        img.addEventListener('mouseleave', function() {
+          this.style.transform = 'scale(1)';
+        });
+      });
+
+      // Smooth scroll ke atas saat klik logo
+      document.querySelector('header a').addEventListener('click', function(e) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
     </script>
   </body>
 </html>
