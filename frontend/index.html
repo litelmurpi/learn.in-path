@@ -22,20 +22,19 @@
     <style>
       body {
         font-family: "Inter", sans-serif;
-        background-color: #f0f2f5; /* Warna latar belakang abu-abu muda */
+        background-color: #f0f2f5;
       }
       .bg-dark-blue {
-        background-color: #1a2a45; /* Warna header biru gelap */
+        background-color: #1a2a45;
       }
       .btn-primary {
-        background-color: #3b82f6; /* Warna tombol biru */
+        background-color: #3b82f6;
         color: white;
       }
       .btn-primary:hover {
         background-color: #2563eb;
       }
       .btn-secondary {
-        /* Diperbarui agar sesuai dengan desain */
         background-color: #1a2a45;
         color: white;
         border: 1px solid #3b82f6;
@@ -43,59 +42,127 @@
       .btn-secondary:hover {
         background-color: #25395f;
       }
-      /* Kelas feature-card tidak lagi digunakan untuk ikon, dihapus untuk kebersihan */
+      /* Mobile menu styles */
+      .mobile-menu {
+        display: none;
+      }
+      .mobile-menu.active {
+        display: block;
+      }
+      /* Prevent body scroll when mobile menu is open */
+      body.menu-open {
+        overflow: hidden;
+      }
     </style>
   </head>
   <body class="text-gray-800">
+    <!-- Header with mobile responsive navigation -->
     <header class="bg-dark-blue sticky top-0 z-50">
-      <nav
-        class="container mx-auto px-6 py-4 flex justify-between items-center"
-      >
-        <div>
-          <img src="dist/asset/logo.png" style="max-width: 170px; height: auto;" class="text-white text-2xl font-bold" />
+      <nav class="container mx-auto px-4 sm:px-6">
+        <!-- Desktop Navigation -->
+        <div class="flex justify-between items-center py-4">
+          <div>
+            <img
+              src="dist/asset/logo.png"
+              alt="Learn.in Path Logo"
+              class="h-10 sm:h-12 w-auto"
+            />
+          </div>
 
+          <!-- Desktop Menu -->
+          <div class="hidden sm:flex items-center space-x-4">
+            <a
+              href="./src/signUp.html"
+              class="btn-secondary px-4 md:px-6 py-2 rounded-lg font-semibold text-sm md:text-base"
+            >
+              Daftar
+            </a>
+            <a
+              href="./src/login.html"
+              class="btn-primary px-4 md:px-6 py-2 rounded-lg font-semibold text-sm md:text-base"
+            >
+              Masuk
+            </a>
+          </div>
+
+          <!-- Mobile Menu Button -->
+          <button
+            id="mobile-menu-button"
+            class="sm:hidden text-white p-2 focus:outline-none"
+            aria-label="Toggle menu"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+                class="menu-icon-bars"
+              ></path>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+                class="menu-icon-close hidden"
+              ></path>
+            </svg>
+          </button>
         </div>
-        <div class="flex items-center space-x-4">
-          <a
-            href="./src/signUp.html"
-            class="btn-secondary px-6 py-2 rounded-lg font-semibold"
-            >Daftar</a
-          >
-          <a
-            href="./src/login.html"
-            class="btn-primary px-6 py-2 rounded-lg font-semibold"
-            >Masuk</a
-          >
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="mobile-menu sm:hidden pb-4">
+          <div class="flex flex-col space-y-3">
+            <a
+              href="./src/signUp.html"
+              class="btn-secondary px-6 py-3 rounded-lg font-semibold text-center"
+            >
+              Daftar
+            </a>
+            <a
+              href="./src/login.html"
+              class="btn-primary px-6 py-3 rounded-lg font-semibold text-center"
+            >
+              Masuk
+            </a>
+          </div>
         </div>
       </nav>
     </header>
 
-    <main class="container mx-auto px-6 py-20">
-      <section class="grid md:grid-cols-2 gap-12 items-center">
-        <div class="flex justify-center">
+    <main class="container mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-20">
+      <!-- Hero Section -->
+      <section class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+        <!-- Image - Mobile First -->
+        <div class="flex justify-center order-1 md:order-1">
           <img
             src="dist/asset/Business_Proposal_Presentation_1.png"
             alt="Dashboard Learn.in Path"
-            class="rounded-lg shadow-2xl max-w-full h-auto"
-            style="max-width: 600px; max-height: 400px;"
+            class="rounded-lg shadow-2xl w-full h-auto max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl"
           />
         </div>
 
-        <div class="text-center md:text-left">
+        <!-- Content -->
+        <div class="text-center md:text-left order-2 md:order-2">
           <h1
-            class="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight"
+            class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight"
           >
             Visualisasikan Konsistensi Anda, Bangun Disiplin Anda.
           </h1>
-          <p class="mt-6 text-lg text-gray-600">
+          <p class="mt-4 sm:mt-6 text-base sm:text-lg text-gray-600">
             Learn.in Path adalah jurnal pembelajaran digital yang mengubah upaya
             harian Anda menjadi peta panas yang indah dan memotivasi, membantu
             Anda membangun kebiasaan belajar yang ampuh.
           </p>
-          <div class="mt-8">
+          <div class="mt-6 sm:mt-8">
             <a
               href="./src/signUp.html"
-              class="btn-primary text-lg font-semibold px-8 py-4 rounded-lg inline-block transition-transform transform hover:scale-105"
+              class="btn-primary text-base sm:text-lg font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-lg inline-block transition-transform transform hover:scale-105 w-full sm:w-auto"
             >
               Mulai Melacak Secara Gratis
             </a>
@@ -103,58 +170,72 @@
         </div>
       </section>
 
-      <section class="py-24">
-        <h2 class="text-3xl font-bold text-center mb-4">
+      <!-- Features Section -->
+      <section class="py-16 sm:py-20 md:py-24">
+        <h2 class="text-2xl sm:text-3xl font-bold text-center mb-4">
           Bagaimana Learn.in Path Membantu Anda
         </h2>
-        <div class="grid md:grid-cols-3 gap-12 items-start mt-12">
+        <div
+          class="grid sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 items-start mt-8 sm:mt-12"
+        >
           <!-- Fitur 1 -->
           <div class="flex flex-col items-center text-center space-y-4">
-            <img 
-              src="dist/asset/Depth 6, Frame 1.png" 
-              alt="Ikon Log dengan Mudah" 
-              class="w-full max-w-[220px] rounded-2xl shadow-md"
+            <img
+              src="dist/asset/Depth 6, Frame 1.png"
+              alt="Ikon Log dengan Mudah"
+              class="w-40 sm:w-48 md:w-full md:max-w-[220px] rounded-2xl shadow-md hover:scale-105 transition-transform duration-300"
             />
-            <h3 class="text-2xl font-bold mb-2 mt-4">Log dengan Mudah</h3>
-            <p class="text-gray-600">
+            <h3 class="text-xl sm:text-2xl font-bold mb-2 mt-4">
+              Log dengan Mudah
+            </h3>
+            <p class="text-sm sm:text-base text-gray-600 px-4 sm:px-0">
               Rekam setiap sesi pembelajaran dalam hitungan detik.
             </p>
           </div>
           <!-- Fitur 2 -->
           <div class="flex flex-col items-center text-center space-y-4">
-            <img 
-              src="dist/asset/Depth 6, Frame 2.png" 
-              alt="Ikon Visualisasikan Rentetan" 
-              class="w-full max-w-[220px] rounded-2xl shadow-md"
+            <img
+              src="dist/asset/Depth 6, Frame 2.png"
+              alt="Ikon Visualisasikan Rentetan"
+              class="w-40 sm:w-48 md:w-full md:max-w-[220px] rounded-2xl shadow-md hover:scale-105 transition-transform duration-300"
             />
-            <h3 class="text-2xl font-bold mb-2 mt-4">Visualisasikan Rentetan Kemenangan Anda</h3>
-            <p class="text-gray-600">
+            <h3 class="text-xl sm:text-2xl font-bold mb-2 mt-4">
+              Visualisasikan Rentetan Kemenangan Anda
+            </h3>
+            <p class="text-sm sm:text-base text-gray-600 px-4 sm:px-0">
               Lihat jejak konsistensi Anda melalui peta panas yang intuitif.
             </p>
           </div>
           <!-- Fitur 3 -->
-          <div class="flex flex-col items-center text-center space-y-4">
-            <img 
-              src="dist/asset/Depth 6, Frame 2 (1).png" 
-              alt="Ikon Tetap Termotivasi" 
-              class="w-full max-w-[220px] rounded-2xl shadow-md"
+          <div
+            class="flex flex-col items-center text-center space-y-4 sm:col-span-2 md:col-span-1"
+          >
+            <img
+              src="dist/asset/Depth 6, Frame 2 (1).png"
+              alt="Ikon Tetap Termotivasi"
+              class="w-40 sm:w-48 md:w-full md:max-w-[220px] rounded-2xl shadow-md hover:scale-105 transition-transform duration-300"
             />
-            <h3 class="text-2xl font-bold mb-2 mt-4">Tetap Termotivasi</h3>
-            <p class="text-gray-600">
+            <h3 class="text-xl sm:text-2xl font-bold mb-2 mt-4">
+              Tetap Termotivasi
+            </h3>
+            <p class="text-sm sm:text-base text-gray-600 px-4 sm:px-0">
               Ubahlah usaha abstrak menjadi bukti nyata kerja keras Anda.
             </p>
           </div>
         </div>
       </section>
 
-      <section class="bg-white rounded-2xl shadow-xl p-12 text-center">
-        <h2 class="text-3xl font-bold mb-4">
+      <!-- CTA Section -->
+      <section
+        class="bg-white rounded-2xl shadow-xl p-8 sm:p-10 md:p-12 text-center"
+      >
+        <h2 class="text-2xl sm:text-3xl font-bold mb-4">
           Siap Membangun Kebiasaan Belajar Anda?
         </h2>
         <div class="mt-6">
           <a
-            href="#"
-            class="btn-primary text-lg font-semibold px-8 py-4 rounded-lg inline-block transition-transform transform hover:scale-105"
+            href="./src/signUp.html"
+            class="btn-primary text-base sm:text-lg font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-lg inline-block transition-transform transform hover:scale-105 w-full sm:w-auto"
           >
             Daftar Gratis
           </a>
@@ -162,38 +243,73 @@
       </section>
     </main>
 
-    <footer class="bg-dark-blue text-white mt-20">
-      <div class="container mx-auto px-6 py-8 text-center">
-        <p>&copy; 2025 Learn.in Path. All rights reserved.</p>
+    <!-- Footer -->
+    <footer class="bg-dark-blue text-white mt-16 sm:mt-20">
+      <div class="container mx-auto px-4 sm:px-6 py-6 sm:py-8 text-center">
+        <p class="text-sm sm:text-base">
+          &copy; 2025 Learn.in Path. All rights reserved.
+        </p>
       </div>
     </footer>
 
     <script>
-      // Alert saat tombol "Daftar Gratis" diklik
-      document.querySelectorAll('.btn-primary').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-          if (this.textContent.includes('Daftar Gratis')) {
+      // Mobile menu toggle
+      const mobileMenuButton = document.getElementById("mobile-menu-button");
+      const mobileMenu = document.getElementById("mobile-menu");
+      const menuIconBars = document.querySelector(".menu-icon-bars");
+      const menuIconClose = document.querySelector(".menu-icon-close");
+      const body = document.body;
+
+      mobileMenuButton.addEventListener("click", function () {
+        mobileMenu.classList.toggle("active");
+        body.classList.toggle("menu-open");
+
+        // Toggle icons
+        menuIconBars.classList.toggle("hidden");
+        menuIconClose.classList.toggle("hidden");
+      });
+
+      // Close mobile menu when clicking on a link
+      document.querySelectorAll("#mobile-menu a").forEach((link) => {
+        link.addEventListener("click", function () {
+          mobileMenu.classList.remove("active");
+          body.classList.remove("menu-open");
+          menuIconBars.classList.remove("hidden");
+          menuIconClose.classList.add("hidden");
+        });
+      });
+
+      // Alert saat tombol "Daftar Gratis" diklik (updated selector)
+      document.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", function (e) {
+          if (
+            this.textContent.trim() === "Daftar Gratis" &&
+            !this.href.includes("signUp.html")
+          ) {
             e.preventDefault();
-            alert('Terima kasih sudah tertarik! Fitur pendaftaran akan segera hadir.');
+            alert(
+              "Terima kasih sudah tertarik! Fitur pendaftaran akan segera hadir."
+            );
           }
         });
       });
 
-      // Animasi hover pada gambar fitur
-      document.querySelectorAll('section .rounded-2xl.shadow-md').forEach(img => {
-        img.addEventListener('mouseenter', function() {
-          this.style.transform = 'scale(1.07)';
-          this.style.transition = 'transform 0.3s';
-        });
-        img.addEventListener('mouseleave', function() {
-          this.style.transform = 'scale(1)';
-        });
-      });
-
       // Smooth scroll ke atas saat klik logo
-      document.querySelector('header a').addEventListener('click', function(e) {
-        e.preventDefault();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+      document
+        .querySelector("header img")
+        .addEventListener("click", function (e) {
+          e.preventDefault();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+
+      // Prevent scroll when mobile menu is open
+      window.addEventListener("resize", function () {
+        if (window.innerWidth > 640) {
+          mobileMenu.classList.remove("active");
+          body.classList.remove("menu-open");
+          menuIconBars.classList.remove("hidden");
+          menuIconClose.classList.add("hidden");
+        }
       });
     </script>
   </body>

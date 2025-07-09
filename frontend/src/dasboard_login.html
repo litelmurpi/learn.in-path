@@ -22,7 +22,7 @@
         background-color: #e8e8e8;
       }
       .bg-navy {
-        background-color: #1a2a45;
+        background-color: #1e3a5f;
       }
       .text-navy {
         color: #1e3a5f;
@@ -160,6 +160,65 @@
       .calendar-today-btn:hover {
         background-color: #152d4a;
       }
+
+      /* Mobile menu styles */
+      .mobile-menu {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 50;
+      }
+      .mobile-menu.active {
+        display: block;
+      }
+      .mobile-menu-content {
+        background-color: white;
+        width: 80%;
+        max-width: 300px;
+        height: 100%;
+        position: absolute;
+        right: 0;
+        top: 0;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .mobile-menu.active .mobile-menu-content {
+        transform: translateX(0);
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 640px) {
+        .card {
+          padding: 16px;
+        }
+        .profile-circle {
+          width: 80px;
+          height: 80px;
+        }
+        .profile-circle svg {
+          width: 40px;
+          height: 40px;
+        }
+        .calendar-day {
+          width: 35px;
+          height: 35px;
+          font-size: 12px;
+        }
+        .stat-card {
+          padding: 16px;
+        }
+        .stat-card .text-3xl {
+          font-size: 1.5rem;
+        }
+        .activity-item {
+          padding: 12px 16px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -167,9 +226,10 @@
     <header class="bg-navy text-white">
       <div class="container mx-auto px-4 py-4">
         <nav class="flex justify-between items-center">
-          <img src="/frontend/dist/asset/logo.png" alt="Learn.in Path" class="text-xl font-semibold" style="max-width: 170px; height: auto;" />
+          <h1 class="text-lg md:text-xl font-semibold">Learn.in Path</h1>
 
-          <div class="flex items-center gap-8">
+          <!-- Desktop Navigation -->
+          <div class="hidden md:flex items-center gap-8">
             <a href="#" class="hover:opacity-80 transition">Dasbor</a>
             <a href="#" class="hover:opacity-80 transition">Laporan</a>
             <a href="#" class="hover:opacity-80 transition">Pengaturan</a>
@@ -236,32 +296,128 @@
               </button>
             </div>
           </div>
+
+          <!-- Mobile Menu Button -->
+          <button id="mobileMenuBtn" class="md:hidden">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
         </nav>
       </div>
     </header>
 
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu">
+      <div class="mobile-menu-content">
+        <div class="bg-navy text-white p-4">
+          <div class="flex justify-between items-center">
+            <h2 class="text-lg font-semibold">Menu</h2>
+            <button id="closeMobileMenu">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="p-4">
+          <nav class="space-y-4">
+            <a href="#" class="block text-gray-700 hover:text-navy">Dasbor</a>
+            <a href="#" class="block text-gray-700 hover:text-navy">Laporan</a>
+            <a href="#" class="block text-gray-700 hover:text-navy"
+              >Pengaturan</a
+            >
+            <hr class="my-4" />
+            <a href="#" class="block text-gray-700 hover:text-navy">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 inline mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                />
+              </svg>
+              Notifikasi
+            </a>
+            <button
+              id="mobileLogoutButton"
+              class="block w-full text-left text-red-600 hover:text-red-800"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 inline mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+              Logout
+            </button>
+          </nav>
+        </div>
+      </div>
+    </div>
+
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
+    <main class="container mx-auto px-4 py-4 md:py-8">
       <!-- Greeting -->
-      <div class="mb-6">
-        <h2 class="greeting text-2xl font-semibold text-navy"></h2>
+      <div class="mb-4 md:mb-6">
+        <h2 class="greeting text-xl md:text-2xl font-semibold text-navy"></h2>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-8">
         <!-- Left Sidebar -->
-        <aside class="lg:col-span-1 space-y-6">
+        <aside class="lg:col-span-1 space-y-4 md:space-y-6">
           <!-- Catat Sesi Card -->
           <div class="card">
-            <h2 class="text-xl font-bold text-navy mb-2">Catat Sesi Anda</h2>
+            <h2 class="text-lg md:text-xl font-bold text-navy mb-2">
+              Catat Sesi Anda
+            </h2>
             <p class="text-gray-600 text-sm mb-4">
               Catat detail sesi belajar Anda.
             </p>
             <div class="flex items-center justify-between">
-              <button id="openModalBtn" class="btn-navy">Mulai!</button>
+              <button id="openModalBtn" class="btn-navy text-sm md:text-base">
+                Mulai!
+              </button>
               <div class="profile-circle">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  class="h-16 w-16 text-white"
+                  class="h-10 w-10 md:h-16 md:w-16 text-white"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -279,39 +435,47 @@
 
           <!-- Aktivitas Terkini -->
           <div class="card">
-            <h3 class="text-lg font-bold text-navy mb-4">Aktivitas Terkini</h3>
+            <h3 class="text-base md:text-lg font-bold text-navy mb-4">
+              Aktivitas Terkini
+            </h3>
             <div id="recentActivities">
               <div class="text-center py-4">
                 <div class="loading mx-auto"></div>
-                <p class="text-gray-500 mt-2">Memuat aktivitas...</p>
+                <p class="text-gray-500 mt-2 text-sm">Memuat aktivitas...</p>
               </div>
             </div>
           </div>
         </aside>
 
         <!-- Main Content Area -->
-        <section class="lg:col-span-3 space-y-6">
-          <h1 class="text-3xl font-bold text-navy">Dasbor</h1>
+        <section class="lg:col-span-3 space-y-4 md:space-y-6">
+          <h1 class="text-2xl md:text-3xl font-bold text-navy">Dasbor</h1>
 
           <!-- Statistics Cards -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <div class="stat-card">
-              <p class="text-sm opacity-80 mb-2">Runtutan Terpanjang 🔥</p>
-              <p class="text-3xl font-bold">0 Hari</p>
+              <p class="text-xs md:text-sm opacity-80 mb-2">
+                Runtutan Terpanjang 🔥
+              </p>
+              <p class="text-2xl md:text-3xl font-bold">0 Hari</p>
             </div>
             <div class="stat-card">
-              <p class="text-sm opacity-80 mb-2">Total Waktu Bulan Ini</p>
-              <p class="text-3xl font-bold">0 jam</p>
+              <p class="text-xs md:text-sm opacity-80 mb-2">
+                Total Waktu Bulan Ini
+              </p>
+              <p class="text-2xl md:text-3xl font-bold">0 jam</p>
             </div>
             <div class="stat-card">
-              <p class="text-sm opacity-80 mb-2">Sesi Hari Ini</p>
-              <p class="text-3xl font-bold">0 jam</p>
+              <p class="text-xs md:text-sm opacity-80 mb-2">Sesi Hari Ini</p>
+              <p class="text-2xl md:text-3xl font-bold">0 jam</p>
             </div>
           </div>
 
           <!-- Calendar/Heatmap -->
           <div class="card">
-            <h3 class="text-xl font-bold text-navy mb-6">Intensitas Belajar</h3>
+            <h3 class="text-lg md:text-xl font-bold text-navy mb-4 md:mb-6">
+              Intensitas Belajar
+            </h3>
 
             <!-- Month Navigation -->
             <div class="calendar-header">
@@ -320,7 +484,7 @@
                   <button class="calendar-nav-btn calendar-nav-prev">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      class="h-5 w-5"
+                      class="h-4 w-4 md:h-5 md:w-5"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -336,7 +500,7 @@
                   <button class="calendar-nav-btn calendar-nav-next">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      class="h-5 w-5"
+                      class="h-4 w-4 md:h-5 md:w-5"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -350,27 +514,59 @@
                     </svg>
                   </button>
                 </div>
-                <h4 class="text-lg font-semibold text-navy">Loading...</h4>
-                <button class="calendar-today-btn">Hari Ini</button>
+                <h4 class="text-base md:text-lg font-semibold text-navy">
+                  Loading...
+                </h4>
+                <button class="calendar-today-btn text-xs md:text-sm">
+                  Hari Ini
+                </button>
               </div>
               <!-- Current date info will be added here by JavaScript -->
             </div>
 
             <!-- Calendar Grid -->
-            <div class="grid grid-cols-7 gap-2 text-center">
+            <div class="grid grid-cols-7 gap-1 md:gap-2 text-center">
               <!-- Days of week -->
-              <div class="text-sm font-semibold text-gray-600 py-2">Sen</div>
-              <div class="text-sm font-semibold text-gray-600 py-2">Sel</div>
-              <div class="text-sm font-semibold text-gray-600 py-2">Rab</div>
-              <div class="text-sm font-semibold text-gray-600 py-2">Kam</div>
-              <div class="text-sm font-semibold text-gray-600 py-2">Jum</div>
-              <div class="text-sm font-semibold text-gray-600 py-2">Sab</div>
-              <div class="text-sm font-semibold text-gray-600 py-2">Min</div>
+              <div
+                class="text-xs md:text-sm font-semibold text-gray-600 py-1 md:py-2"
+              >
+                Sen
+              </div>
+              <div
+                class="text-xs md:text-sm font-semibold text-gray-600 py-1 md:py-2"
+              >
+                Sel
+              </div>
+              <div
+                class="text-xs md:text-sm font-semibold text-gray-600 py-1 md:py-2"
+              >
+                Rab
+              </div>
+              <div
+                class="text-xs md:text-sm font-semibold text-gray-600 py-1 md:py-2"
+              >
+                Kam
+              </div>
+              <div
+                class="text-xs md:text-sm font-semibold text-gray-600 py-1 md:py-2"
+              >
+                Jum
+              </div>
+              <div
+                class="text-xs md:text-sm font-semibold text-gray-600 py-1 md:py-2"
+              >
+                Sab
+              </div>
+              <div
+                class="text-xs md:text-sm font-semibold text-gray-600 py-1 md:py-2"
+              >
+                Min
+              </div>
 
               <!-- Calendar days will be rendered here -->
               <div
                 id="heatmapCalendar"
-                class="col-span-7 grid grid-cols-7 gap-2"
+                class="col-span-7 grid grid-cols-7 gap-1 md:gap-2"
               >
                 <!-- Calendar days will be dynamically generated -->
               </div>
@@ -380,32 +576,32 @@
 
             <!-- Legend -->
             <div
-              class="mt-6 flex items-center justify-center gap-4 text-sm text-gray-600"
+              class="mt-4 md:mt-6 flex flex-wrap items-center justify-center gap-2 md:gap-4 text-xs md:text-sm text-gray-600"
             >
               <span>Kurang</span>
               <div class="flex gap-1">
                 <div
-                  class="w-4 h-4 rounded"
+                  class="w-3 h-3 md:w-4 md:h-4 rounded"
                   style="background-color: #f3f4f6"
                   title="0 menit"
                 ></div>
                 <div
-                  class="w-4 h-4 rounded"
+                  class="w-3 h-3 md:w-4 md:h-4 rounded"
                   style="background-color: #86efac"
                   title="< 1 jam"
                 ></div>
                 <div
-                  class="w-4 h-4 rounded"
+                  class="w-3 h-3 md:w-4 md:h-4 rounded"
                   style="background-color: #4ade80"
                   title="1-3 jam"
                 ></div>
                 <div
-                  class="w-4 h-4 rounded"
+                  class="w-3 h-3 md:w-4 md:h-4 rounded"
                   style="background-color: #22c55e"
                   title="3-5 jam"
                 ></div>
                 <div
-                  class="w-4 h-4 rounded"
+                  class="w-3 h-3 md:w-4 md:h-4 rounded"
                   style="background-color: #16a34a"
                   title="> 5 jam"
                 ></div>
@@ -420,11 +616,11 @@
     <!-- Modal Section -->
     <div
       id="sessionModal"
-      class="modal-transition fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 invisible opacity-0"
+      class="modal-transition fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 invisible opacity-0 p-4"
     >
       <div
         id="modalContent"
-        class="modal-content-transition bg-white rounded-2xl shadow-xl p-8 w-full max-w-lg m-4 relative transform scale-95"
+        class="modal-content-transition bg-white rounded-2xl shadow-xl p-6 md:p-8 w-full max-w-lg relative transform scale-95 max-h-[90vh] overflow-y-auto"
       >
         <!-- Close Button -->
         <button
@@ -433,7 +629,7 @@
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-8 w-8"
+            class="h-6 w-6 md:h-8 md:w-8"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -447,16 +643,16 @@
           </svg>
         </button>
 
-        <h2 class="text-2xl font-bold text-navy mb-6">
+        <h2 class="text-xl md:text-2xl font-bold text-navy mb-4 md:mb-6">
           Catat waktu belajarmu disini
         </h2>
 
         <!-- Form -->
-        <form id="sessionForm" class="space-y-5">
+        <form id="sessionForm" class="space-y-4 md:space-y-5">
           <div>
             <label
               for="topic"
-              class="block text-md font-medium text-gray-700 mb-1"
+              class="block text-sm md:text-md font-medium text-gray-700 mb-1"
               >Topik Pembelajaran</label
             >
             <input
@@ -464,16 +660,16 @@
               id="topic"
               name="topic"
               placeholder="Contoh: Belajar DDL, DML"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
               required
             />
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="grid grid-cols-2 gap-4">
             <div>
               <label
                 for="hours"
-                class="block text-md font-medium text-gray-700 mb-1"
+                class="block text-sm md:text-md font-medium text-gray-700 mb-1"
                 >Jam</label
               >
               <input
@@ -483,14 +679,14 @@
                 value="0"
                 min="0"
                 max="24"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
                 required
               />
             </div>
             <div>
               <label
                 for="minutes"
-                class="block text-md font-medium text-gray-700 mb-1"
+                class="block text-sm md:text-md font-medium text-gray-700 mb-1"
                 >Menit</label
               >
               <input
@@ -500,7 +696,7 @@
                 value="0"
                 min="0"
                 max="59"
-                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
                 required
               />
             </div>
@@ -509,14 +705,14 @@
           <div>
             <label
               for="date"
-              class="block text-md font-medium text-gray-700 mb-1"
+              class="block text-sm md:text-md font-medium text-gray-700 mb-1"
               >Tanggal</label
             >
             <input
               type="date"
               id="date"
               name="date"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
               required
             />
           </div>
@@ -524,7 +720,7 @@
           <div>
             <label
               for="notes"
-              class="block text-md font-medium text-gray-700 mb-1"
+              class="block text-sm md:text-md font-medium text-gray-700 mb-1"
               >Catatan</label
             >
             <textarea
@@ -532,7 +728,7 @@
               name="notes"
               rows="4"
               placeholder="next belajar DCL"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
             ></textarea>
           </div>
 
@@ -541,13 +737,13 @@
             <button
               type="button"
               id="cancelModalBtn"
-              class="bg-gray-200 text-gray-700 font-semibold px-6 py-2 rounded-lg hover:bg-gray-300 transition"
+              class="bg-gray-200 text-gray-700 font-semibold px-4 md:px-6 py-2 rounded-lg hover:bg-gray-300 transition text-sm md:text-base"
             >
               Cancel
             </button>
             <button
               type="submit"
-              class="bg-navy text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-800 transition"
+              class="bg-navy text-white font-semibold px-4 md:px-6 py-2 rounded-lg hover:bg-blue-800 transition text-sm md:text-base"
             >
               Simpan Sesi
             </button>
@@ -556,9 +752,10 @@
       </div>
     </div>
 
-    <!-- JavaScript for Modal -->
+    <!-- JavaScript for Modal and Mobile Menu -->
     <script>
       document.addEventListener("DOMContentLoaded", () => {
+        // Modal functionality
         const openModalBtn = document.getElementById("openModalBtn");
         const sessionModal = document.getElementById("sessionModal");
         const modalContent = document.getElementById("modalContent");
@@ -576,6 +773,7 @@
           sessionModal.classList.add("opacity-100");
           modalContent.classList.remove("scale-95");
           modalContent.classList.add("scale-100");
+          document.body.style.overflow = "hidden";
         };
 
         const closeModal = () => {
@@ -583,6 +781,7 @@
           sessionModal.classList.add("opacity-0");
           modalContent.classList.remove("scale-100");
           modalContent.classList.add("scale-95");
+          document.body.style.overflow = "";
           setTimeout(() => {
             sessionModal.classList.remove("visible");
             sessionModal.classList.add("invisible");
@@ -599,15 +798,40 @@
             closeModal();
           }
         });
+
+        // Mobile menu functionality
+        const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+        const mobileMenu = document.getElementById("mobileMenu");
+        const closeMobileMenu = document.getElementById("closeMobileMenu");
+        const mobileLogoutButton =
+          document.getElementById("mobileLogoutButton");
+
+        mobileMenuBtn.addEventListener("click", () => {
+          mobileMenu.classList.add("active");
+          document.body.style.overflow = "hidden";
+        });
+
+        closeMobileMenu.addEventListener("click", () => {
+          mobileMenu.classList.remove("active");
+          document.body.style.overflow = "";
+        });
+
+        mobileMenu.addEventListener("click", (event) => {
+          if (event.target === mobileMenu) {
+            mobileMenu.classList.remove("active");
+            document.body.style.overflow = "";
+          }
+        });
+
+        // Mobile logout
+        mobileLogoutButton.addEventListener("click", () => {
+          const logoutButton = document.getElementById("logoutButton");
+          if (logoutButton) {
+            logoutButton.click();
+          }
+        });
       });
     </script>
-
-    <script type="module">
-      import { displayUserInfo } from "./userInfo.js";
-      // Display user info when page loads
-      displayUserInfo();
-    </script>
-
     <script type="module" src="./dashboard.js"></script>
   </body>
 </html>

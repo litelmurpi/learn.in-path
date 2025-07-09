@@ -1,4 +1,6 @@
 import { registerUser } from "./apiService.js";
+import { saveToken } from "./auth.js";
+import { setUserData } from "./userInfo.js";
 
 // Fungsi helper untuk mendapatkan element dengan aman
 function getElementSafely(id) {
@@ -95,9 +97,51 @@ window.addEventListener("load", () => {
 
       console.log("Mengirim data registrasi:", userData);
       const data = await registerUser(userData);
+      console.log("Full registration response:", data);
 
-      alert("Registrasi berhasil! Silakan login.");
-      window.location.href = "login.html";
+      // Di bagian setelah register berhasil
+      if (data && data.token) {
+        saveToken(data.token);
+
+        // Handle different response formats
+        let responseUserData = null;
+
+        if (data.user) {
+          responseUserData = data.user;
+        } else if (data.data && data.data.user) {
+          responseUserData = data.data.user;
+        }
+
+        if (responseUserData) {
+          const normalizedUserData = {
+            id: responseUserData.id,
+            username:
+              responseUserData.username || responseUserData.name || username,
+            name:
+              responseUserData.name || responseUserData.username || username,
+            email: responseUserData.email || email,
+          };
+
+          const saved = setUserData(normalizedUserData);
+
+          if (saved) {
+            console.log(
+              "User data saved after registration:",
+              normalizedUserData
+            );
+          } else {
+            console.error("Failed to save user data after registration");
+          }
+        }
+
+        alert("Registrasi berhasil! Silakan login.");
+
+        setTimeout(() => {
+          window.location.replace("login.html");
+        }, 100);
+      } else {
+        throw new Error("Token tidak diterima dari server");
+      }
     } catch (error) {
       console.error("Error saat registrasi:", error);
       alert(`Registrasi gagal: ${error.message}`);

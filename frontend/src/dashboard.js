@@ -1,27 +1,59 @@
 import { isAuthenticated, removeToken } from "./auth.js";
-import { getLogs, getHeatmapData, createLog } from "./apiService.js";
+import {
+  getLogs,
+  getHeatmapData,
+  createLog,
+  getUserProfile,
+} from "./apiService.js";
+import { displayUserInfo, getUserData } from "./userInfo.js";
 
 // Lindungi halaman: jika tidak terotentikasi, arahkan ke login
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   if (!isAuthenticated()) {
     window.location.href = "login.html";
     return;
   }
 
-  // Ambil elemen DOM
+  // Check if user data exists, if not fetch it
+  let userData = getUserData();
+  if (!userData) {
+    try {
+      console.log("User data not found in localStorage, fetching from API...");
+      const response = await getUserProfile();
+      if (response && response.user) {
+        console.log("User data fetched successfully");
+      }
+    } catch (error) {
+      console.error("Failed to fetch user profile:", error);
+    }
+  }
+
+  // Display user info
+  displayUserInfo();
+
+  // Ambil elemen DOM dengan selector yang lebih spesifik
   const logoutButton = document.getElementById("logoutButton");
   const sessionForm = document.getElementById("sessionForm");
   const recentActivitiesContainer = document.getElementById("recentActivities");
   const heatmapContainer = document.getElementById("heatmapCalendar");
-  const totalHoursElement = document.querySelector(
-    ".stat-card:nth-child(2) .text-3xl"
+
+  // Fix: Gunakan selector yang lebih spesifik untuk stat cards
+  const statCards = document.querySelectorAll(".stat-card");
+  const longestStreakElement = statCards[0]?.querySelector(
+    ".stat-value, .text-2xl, .text-3xl"
   );
-  const todaySessionElement = document.querySelector(
-    ".stat-card:nth-child(3) .text-3xl"
+  const totalHoursElement = statCards[1]?.querySelector(
+    ".stat-value, .text-2xl, .text-3xl"
   );
-  const longestStreakElement = document.querySelector(
-    ".stat-card:nth-child(1) .text-3xl"
+  const todaySessionElement = statCards[2]?.querySelector(
+    ".stat-value, .text-2xl, .text-3xl"
   );
+
+  console.log("Stat elements found:", {
+    longestStreak: !!longestStreakElement,
+    totalHours: !!totalHoursElement,
+    todaySession: !!todaySessionElement,
+  });
 
   // Variabel untuk menyimpan data
   let currentMonth = new Date().getMonth();
@@ -32,25 +64,65 @@ document.addEventListener("DOMContentLoaded", () => {
   async function loadDashboardData(updateCalendarOnly = false) {
     try {
       if (!updateCalendarOnly) {
-        const [logsResponse, heatmapResponse] = await Promise.all([
-          getLogs(),
-          getHeatmapData(),
-        ]);
+        console.log("Loading dashboard data...");
 
-        console.log("Logs Response:", logsResponse);
-        console.log("Heatmap Response:", heatmapResponse);
+        // Try to get logs data
+        let logsResponse = null;
+        let heatmapResponse = null;
+
+        try {
+          logsResponse = await getLogs();
+          console.log("Raw logs response:", logsResponse);
+        } catch (error) {
+          console.error("Error fetching logs:", error);
+        }
+
+        try {
+          heatmapResponse = await getHeatmapData();
+          console.log("Raw heatmap response:", heatmapResponse);
+        } catch (error) {
+          console.error("Error fetching heatmap:", error);
+        }
 
         // Handle response dari StudyLogController dengan pagination
         let logs = [];
-        if (logsResponse && logsResponse.success && logsResponse.data) {
-          if (logsResponse.data.data && Array.isArray(logsResponse.data.data)) {
-            logs = logsResponse.data.data;
-          } else if (Array.isArray(logsResponse.data)) {
-            logs = logsResponse.data;
+
+        // Different response formats handling
+        if (logsResponse) {
+          // If response has success property
+          if (logsResponse.success && logsResponse.data) {
+            if (
+              logsResponse.data.data &&
+              Array.isArray(logsResponse.data.data)
+            ) {
+              logs = logsResponse.data.data;
+            } else if (Array.isArray(logsResponse.data)) {
+              logs = logsResponse.data;
+            }
           }
-        } else if (Array.isArray(logsResponse)) {
-          logs = logsResponse;
+          // If response has data property directly
+          else if (logsResponse.data) {
+            if (Array.isArray(logsResponse.data)) {
+              logs = logsResponse.data;
+            } else if (
+              logsResponse.data.data &&
+              Array.isArray(logsResponse.data.data)
+            ) {
+              logs = logsResponse.data.data;
+            }
+          }
+          // If response is array directly
+          else if (Array.isArray(logsResponse)) {
+            logs = logsResponse;
+          }
+          // If response has logs property
+          else if (logsResponse.logs && Array.isArray(logsResponse.logs)) {
+            logs = logsResponse.logs;
+          }
         }
+
+        console.log("Processed logs array:", logs);
+        console.log("Number of logs:", logs.length);
 
         allLogs = logs; // Simpan untuk digunakan saat navigasi bulan
 
@@ -74,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         if (recentActivitiesContainer && !updateCalendarOnly) {
           recentActivitiesContainer.innerHTML =
-            '<p class="text-red-500 text-center">Gagal memuat data. Silakan refresh halaman.</p>';
+            '<p class="text-red-500 text-center text-sm">Gagal memuat data. Silakan refresh halaman.</p>';
         }
       }
     }
@@ -86,16 +158,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     recentActivitiesContainer.innerHTML = "";
 
-    if (logs.length === 0) {
+    if (!logs || logs.length === 0) {
       recentActivitiesContainer.innerHTML =
-        '<p class="text-gray-500 text-center">Belum ada aktivitas</p>';
+        '<p class="text-gray-500 text-center text-sm">Belum ada aktivitas</p>';
       return;
     }
 
     // Ambil 5 log terbaru
     logs.slice(0, 5).forEach((log) => {
       const topic = log.topic || "Tanpa Topik";
-      const totalMinutes = log.duration_minutes || 0;
+      const totalMinutes = parseInt(log.duration_minutes) || 0;
       const hours = Math.floor(totalMinutes / 60);
       const minutes = totalMinutes % 60;
       const logDate = new Date(log.log_date || log.created_at);
@@ -109,8 +181,8 @@ document.addEventListener("DOMContentLoaded", () => {
           </svg>
         </div>
         <div class="flex-1">
-          <p class="font-semibold">${topic}</p>
-          <p class="text-sm opacity-80">${
+          <p class="font-semibold text-sm">${topic}</p>
+          <p class="text-xs opacity-80">${
             hours > 0 ? hours + " jam " : ""
           }${minutes} menit</p>
           <p class="text-xs opacity-60">${formatDate(logDate)}</p>
@@ -122,9 +194,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Fungsi untuk update statistik
   function updateStatistics(logs) {
-    if (!Array.isArray(logs)) return;
+    console.log("Updating statistics with logs:", logs);
+
+    if (!Array.isArray(logs)) {
+      console.error("Logs is not an array");
+      return;
+    }
 
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
     const currentMonth = today.getMonth();
     const currentYear = today.getFullYear();
     let totalMonthMinutes = 0;
@@ -134,7 +212,11 @@ document.addEventListener("DOMContentLoaded", () => {
     logs.forEach((log) => {
       try {
         const logDate = new Date(log.log_date || log.created_at);
-        const durationMinutes = parseInt(log.duration_minutes || 0);
+        const durationMinutes = parseInt(log.duration_minutes) || 0;
+
+        console.log(
+          `Processing log: date=${logDate.toDateString()}, minutes=${durationMinutes}`
+        );
 
         if (
           logDate.getMonth() === currentMonth &&
@@ -143,63 +225,112 @@ document.addEventListener("DOMContentLoaded", () => {
           totalMonthMinutes += durationMinutes;
         }
 
-        if (logDate.toDateString() === today.toDateString()) {
+        // Check if log date is today
+        const logDateOnly = new Date(logDate);
+        logDateOnly.setHours(0, 0, 0, 0);
+
+        if (logDateOnly.getTime() === today.getTime()) {
           todayMinutes += durationMinutes;
+          console.log(`Today's log found: ${durationMinutes} minutes`);
         }
       } catch (e) {
         console.warn("Error processing log:", log, e);
       }
     });
 
+    console.log("Statistics calculated:", {
+      totalMonthMinutes,
+      todayMinutes,
+    });
+
     // Hitung streak
     const streak = calculateStreak(logs);
+    console.log("Streak calculated:", streak);
 
     // Update UI
     if (totalHoursElement) {
       const totalHours = Math.floor(totalMonthMinutes / 60);
       const remainingMinutes = totalMonthMinutes % 60;
-      totalHoursElement.textContent =
-        totalHours > 0 ? `${totalHours} jam` : `${remainingMinutes} menit`;
+      const text =
+        totalHours > 0
+          ? `${totalHours} jam ${
+              remainingMinutes > 0 ? remainingMinutes + " menit" : ""
+            }`
+          : `${remainingMinutes} menit`;
+      totalHoursElement.textContent = text;
+      console.log("Updated total hours:", text);
     }
+
     if (todaySessionElement) {
       const todayHours = Math.floor(todayMinutes / 60);
       const remainingMinutes = todayMinutes % 60;
-      todaySessionElement.textContent =
-        todayHours > 0 ? `${todayHours} jam` : `${remainingMinutes} menit`;
+      const text =
+        todayMinutes > 0
+          ? todayHours > 0
+            ? `${todayHours} jam ${
+                remainingMinutes > 0 ? remainingMinutes + " menit" : ""
+              }`
+            : `${remainingMinutes} menit`
+          : "0 jam";
+      todaySessionElement.textContent = text;
+      console.log("Updated today session:", text);
     }
+
     if (longestStreakElement) {
       longestStreakElement.textContent = `${streak} Hari`;
+      console.log("Updated streak:", `${streak} Hari`);
     }
   }
 
   // Fungsi untuk menghitung streak
   function calculateStreak(logs) {
-    if (logs.length === 0) return 0;
-
-    // Sort logs by date descending
-    const sortedLogs = [...logs].sort((a, b) => {
-      const dateA = new Date(a.log_date || a.created_at);
-      const dateB = new Date(b.log_date || b.created_at);
-      return dateB - dateA;
-    });
-
-    let streak = 0;
-    let currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
-
-    // Check consecutive days
-    const uniqueDates = new Set();
-    sortedLogs.forEach((log) => {
-      const logDate = new Date(log.log_date || log.created_at);
-      uniqueDates.add(logDate.toDateString());
-    });
-
-    // Check from today backwards
-    while (uniqueDates.has(currentDate.toDateString())) {
-      streak++;
-      currentDate.setDate(currentDate.getDate() - 1);
+    if (!logs || logs.length === 0) {
+      console.log("No logs available");
+      return 0;
     }
 
+    const getDateKey = (date) => {
+      const d = new Date(date);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    };
+
+    // Get today's date key
+    const today = new Date();
+    const todayKey = getDateKey(today);
+
+    // Build set of dates that have logs
+    const datesWithLogs = new Set();
+
+    logs.forEach((log) => {
+      const dateKey = getDateKey(log.log_date);
+      datesWithLogs.add(dateKey);
+    });
+
+    console.log("Today:", todayKey);
+    console.log("Dates with logs:", Array.from(datesWithLogs).sort());
+
+    // Calculate streak starting from today
+    let streak = 0;
+    let currentDate = new Date(today);
+
+    // Check consecutive days backwards from today
+    while (true) {
+      const dateKey = getDateKey(currentDate);
+
+      if (datesWithLogs.has(dateKey)) {
+        streak++;
+        // Move to previous day
+        currentDate.setDate(currentDate.getDate() - 1);
+      } else {
+        // No log for this date, streak ends
+        break;
+      }
+    }
+
+    console.log("Final streak:", streak);
     return streak;
   }
 
@@ -338,7 +469,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const calendarHeader = document.querySelector(".calendar-header");
       if (calendarHeader) {
         const dateInfo = document.createElement("div");
-        dateInfo.className = "current-date-info text-sm text-gray-600 mt-2";
+        dateInfo.className =
+          "current-date-info text-xs md:text-sm text-gray-600 mt-2";
         calendarHeader.appendChild(dateInfo);
       }
     }
@@ -389,7 +521,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (calendarCard) {
         const stats = document.createElement("div");
         stats.className = "month-stats mt-4 p-4 bg-gray-50 rounded-lg";
-        calendarCard.insertBefore(stats, calendarCard.querySelector(".mt-6")); // Insert before legend
+        const legend = calendarCard.querySelector(".mt-4");
+        if (legend) {
+          calendarCard.insertBefore(stats, legend);
+        } else {
+          calendarCard.appendChild(stats);
+        }
       }
     }
 
@@ -414,19 +551,21 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           <div>
             <p class="text-xs text-gray-600">Total Waktu</p>
-            <p class="font-semibold text-navy">${totalHours}j ${remainingMinutes}m</p>
+            <p class="font-semibold text-navy text-sm">${totalHours}j ${remainingMinutes}m</p>
           </div>
           <div>
             <p class="text-xs text-gray-600">Total Sesi</p>
-            <p class="font-semibold text-navy">${totalSessions}</p>
+            <p class="font-semibold text-navy text-sm">${totalSessions}</p>
           </div>
           <div>
             <p class="text-xs text-gray-600">Hari Belajar</p>
-            <p class="font-semibold text-navy">${studyDays.size} hari</p>
+            <p class="font-semibold text-navy text-sm">${
+              studyDays.size
+            } hari</p>
           </div>
           <div>
             <p class="text-xs text-gray-600">Rata-rata/Hari</p>
-            <p class="font-semibold text-navy">${Math.floor(
+            <p class="font-semibold text-navy text-sm">${Math.floor(
               avgMinutesPerDay / 60
             )}j ${avgMinutesPerDay % 60}m</p>
           </div>
@@ -618,6 +757,7 @@ document.addEventListener("DOMContentLoaded", () => {
     logoutButton.addEventListener("click", () => {
       if (confirm("Apakah Anda yakin ingin keluar?")) {
         removeToken();
+        localStorage.removeItem("user"); // Clear user data too
         window.location.href = "login.html";
       }
     });
