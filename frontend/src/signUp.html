@@ -65,20 +65,42 @@
         margin: 0 auto;
         padding: 40px;
       }
+
+      /* Mobile adjustments */
+      @media (max-width: 640px) {
+        .form-container {
+          padding: 20px;
+        }
+        .input-field {
+          padding: 10px 14px;
+          font-size: 14px;
+        }
+      }
     </style>
   </head>
   <body>
     <!-- Header -->
     <div class="bg-navy text-white py-4">
       <div class="container mx-auto px-4">
-        <img src="/frontend/dist/asset/logo.png" alt="Learn.in Path" class="text-xl font-semibold" style="max-width: 170px; height: auto;" />
+        <img
+          src="/frontend/dist/asset/logo.png"
+          alt="Learn.in Path"
+          class="text-xl font-semibold"
+          style="max-width: 170px; width: 100%; height: auto"
+        />
       </div>
     </div>
 
     <!-- Main Content -->
-    <div class="min-h-screen flex items-center justify-center px-4">
-      <div class="form-container w-full">
-        <h2 class="text-3xl font-bold text-center text-navy mb-8">Buat Akun</h2>
+    <div class="min-h-screen flex items-center justify-center px-4 py-8">
+      <div
+        class="form-container w-full bg-white rounded-lg shadow-lg md:shadow-none md:bg-transparent"
+      >
+        <h2
+          class="text-2xl md:text-3xl font-bold text-center text-navy mb-6 md:mb-8"
+        >
+          Buat Akun
+        </h2>
 
         <form id="signupForm">
           <!-- Nama Pengguna -->
@@ -92,6 +114,7 @@
               class="input-field"
               placeholder="Nama Pengguna...."
               required
+              autocomplete="username"
             />
           </div>
 
@@ -104,6 +127,7 @@
               class="input-field"
               placeholder="Email...."
               required
+              autocomplete="email"
             />
           </div>
 
@@ -119,6 +143,7 @@
                 class="input-field pr-12"
                 placeholder="Masukan Kata Sandi...."
                 required
+                autocomplete="new-password"
               />
               <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
                 <i
@@ -141,6 +166,7 @@
                 class="input-field pr-12"
                 placeholder="Konfirmasi Kata Sandi...."
                 required
+                autocomplete="new-password"
               />
               <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
                 <i
@@ -175,7 +201,7 @@
 
           <!-- Tombol Daftar -->
           <button
-            class="btn-navy w-full py-3 rounded-lg font-semibold text-lg transition-all duration-300 hover:shadow-lg"
+            class="btn-navy w-full py-3 rounded-lg font-semibold text-base md:text-lg transition-all duration-300 hover:shadow-lg"
             type="submit"
           >
             Daftar
