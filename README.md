@@ -367,7 +367,7 @@ Kami sangat menghargai kontribusi Anda! Silakan baca [CONTRIBUTING.md](CONTRIBUT
       <a href="https://github.com/wasima">GitHub</a>
     </td>
     <td align="center">
-      <img src="https://github.com/identicons/litelmurpi.png(https://avatars.githubusercontent.com/u/114564508?v=4)" width="100px;" alt="Yudistira Azfa"/>
+      <img src="https://avatars.githubusercontent.com/u/114564508?v=4" width="100px;" alt="Yudistira Azfa"/>
       <br />
       <b>Yudistira Azfa</b>
       <br />
