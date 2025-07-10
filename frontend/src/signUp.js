@@ -56,27 +56,52 @@ window.addEventListener("load", () => {
 
       // Validasi
       if (!username) {
-        alert("Nama pengguna harus diisi!");
+        Swal.fire({
+          icon: "warning",
+          title: "Perhatian",
+          text: "Nama pengguna harus diisi!",
+          confirmButtonColor: "#1e3a5f",
+        });
         return;
       }
 
       if (!email) {
-        alert("Email harus diisi!");
+        Swal.fire({
+          icon: "warning",
+          title: "Perhatian",
+          text: "Email harus diisi!",
+          confirmButtonColor: "#1e3a5f",
+        });
         return;
       }
 
       if (!isAgreed) {
-        alert("Anda harus menyetujui ketentuan layanan dan kebijakan privasi!");
+        Swal.fire({
+          icon: "warning",
+          title: "Perhatian",
+          text: "Anda harus menyetujui ketentuan layanan dan kebijakan privasi!",
+          confirmButtonColor: "#1e3a5f",
+        });
         return;
       }
 
       if (password.length < 8) {
-        alert("Kata sandi minimal 8 karakter!");
+        Swal.fire({
+          icon: "warning",
+          title: "Perhatian",
+          text: "Kata sandi minimal 8 karakter!",
+          confirmButtonColor: "#1e3a5f",
+        });
         return;
       }
 
       if (password !== passwordConfirm) {
-        alert("Konfirmasi kata sandi tidak cocok!");
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Konfirmasi kata sandi tidak cocok!",
+          confirmButtonColor: "#1e3a5f",
+        });
         return;
       }
 
@@ -134,17 +159,31 @@ window.addEventListener("load", () => {
           }
         }
 
-        alert("Registrasi berhasil! Silakan login.");
+        // Success alert with SweetAlert2
+        await Swal.fire({
+          icon: "success",
+          title: "Registrasi Berhasil!",
+          text: "Silakan login dengan akun yang baru dibuat.",
+          confirmButtonColor: "#1e3a5f",
+          confirmButtonText: "OK",
+        });
 
-        setTimeout(() => {
-          window.location.replace("login.html");
-        }, 100);
+        window.location.replace("login.html");
       } else {
         throw new Error("Token tidak diterima dari server");
       }
     } catch (error) {
       console.error("Error saat registrasi:", error);
-      alert(`Registrasi gagal: ${error.message}`);
+
+      // Error alert with SweetAlert2
+      Swal.fire({
+        icon: "error",
+        title: "Registrasi Gagal",
+        text:
+          error.message ||
+          "Terjadi kesalahan saat mendaftar. Silakan coba lagi.",
+        confirmButtonColor: "#1e3a5f",
+      });
 
       // Reset button state
       const submitBtn = e.target.querySelector('button[type="submit"]');

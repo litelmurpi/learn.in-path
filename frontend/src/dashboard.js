@@ -140,9 +140,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       console.error("Error detail:", error.stack);
 
       if (error.message && error.message.includes("Token")) {
-        alert("Sesi Anda telah berakhir. Silakan login kembali.");
-        removeToken();
-        window.location.href = "login.html";
+        Swal.fire({
+          icon: "error",
+          title: "Sesi Berakhir",
+          text: "Sesi Anda telah berakhir. Silakan login kembali.",
+          confirmButtonColor: "#1e3a5f",
+        }).then(() => {
+          removeToken();
+          window.location.href = "login.html";
+        });
       } else {
         if (recentActivitiesContainer && !updateCalendarOnly) {
           recentActivitiesContainer.innerHTML =
@@ -399,7 +405,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Add days from previous month
     for (let i = adjustedFirstDay - 1; i >= 0; i--) {
       const dayElement = document.createElement("div");
-      dayElement.className = "calendar-day text-gray-400";
+      dayElement.className = "calendar-day text-gray-400 opacity-50";
       dayElement.textContent = daysInPrevMonth - i;
       dayElement.style.backgroundColor = "#f9fafb";
       heatmapContainer.appendChild(dayElement);
@@ -451,7 +457,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const remainingCells = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
     for (let day = 1; day <= remainingCells; day++) {
       const dayElement = document.createElement("div");
-      dayElement.className = "calendar-day text-gray-400";
+      dayElement.className = "calendar-day text-gray-400 opacity-50";
       dayElement.textContent = day;
       dayElement.style.backgroundColor = "#f9fafb";
       heatmapContainer.appendChild(dayElement);
@@ -618,10 +624,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       content += "</div>";
     }
 
-    // You can implement a modal or tooltip to show this content
-    // For now, let's use alert (you should replace with a proper modal)
-    // alert(content);
-    console.log("Day details:", dayLogs);
+    // Replace alert with SweetAlert2
+    Swal.fire({
+      html: content,
+      confirmButtonColor: "#1e3a5f",
+      confirmButtonText: "Tutup",
+      width: "500px",
+      customClass: {
+        popup: "text-left",
+      },
+    });
   }
 
   // Setup calendar navigation
@@ -699,7 +711,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       const totalMinutes = hours * 60 + minutes;
 
       if (totalMinutes === 0) {
-        alert("Durasi belajar harus diisi!");
+        Swal.fire({
+          icon: "warning",
+          title: "Durasi Kosong",
+          text: "Durasi belajar harus diisi!",
+          confirmButtonColor: "#1e3a5f",
+        });
         return;
       }
 
@@ -713,12 +730,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       // Validasi input
       if (!logData.topic || !logData.topic.trim()) {
-        alert("Topik pembelajaran harus diisi!");
+        Swal.fire({
+          icon: "warning",
+          title: "Topik Kosong",
+          text: "Topik pembelajaran harus diisi!",
+          confirmButtonColor: "#1e3a5f",
+        });
         return;
       }
 
       if (!logData.log_date) {
-        alert("Tanggal harus diisi!");
+        Swal.fire({
+          icon: "warning",
+          title: "Tanggal Kosong",
+          text: "Tanggal harus diisi!",
+          confirmButtonColor: "#1e3a5f",
+        });
         return;
       }
 
@@ -728,7 +755,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         submitBtn.disabled = true;
 
         await createLog(logData);
-        alert("Sesi berhasil disimpan!");
+
+        Swal.fire({
+          icon: "success",
+          title: "Berhasil!",
+          text: "Sesi berhasil disimpan!",
+          confirmButtonColor: "#1e3a5f",
+          timer: 2000,
+          timerProgressBar: true,
+        });
+
         sessionForm.reset();
 
         // Set default date ke hari ini lagi
@@ -743,7 +779,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         const closeModalBtn = document.getElementById("closeModalBtn");
         if (closeModalBtn) closeModalBtn.click();
       } catch (error) {
-        alert(`Gagal menyimpan sesi: ${error.message}`);
+        Swal.fire({
+          icon: "error",
+          title: "Gagal Menyimpan",
+          text: error.message,
+          confirmButtonColor: "#1e3a5f",
+        });
       } finally {
         const submitBtn = e.target.querySelector('button[type="submit"]');
         submitBtn.textContent = "Simpan Sesi";
@@ -755,11 +796,33 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Event listener untuk logout
   if (logoutButton) {
     logoutButton.addEventListener("click", () => {
-      if (confirm("Apakah Anda yakin ingin keluar?")) {
-        removeToken();
-        localStorage.removeItem("user"); // Clear user data too
-        window.location.href = "login.html";
-      }
+      Swal.fire({
+        title: "Konfirmasi Logout",
+        text: "Apakah Anda yakin ingin keluar?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: "#1e3a5f",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Ya, Keluar",
+        cancelButtonText: "Batal",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          removeToken();
+          localStorage.removeItem("user"); // Clear user data too
+
+          Swal.fire({
+            icon: "success",
+            title: "Logout Berhasil",
+            text: "Anda telah berhasil keluar.",
+            confirmButtonColor: "#1e3a5f",
+            timer: 1500,
+            timerProgressBar: true,
+            showConfirmButton: false,
+          }).then(() => {
+            window.location.href = "login.html";
+          });
+        }
+      });
     });
   }
 

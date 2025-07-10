@@ -84,19 +84,36 @@ document.addEventListener("DOMContentLoaded", () => {
           console.log("Verified saved user data:", savedData);
         }
 
-        alert(data.message || "Login berhasil!");
+        // Success alert with SweetAlert2
+        await Swal.fire({
+          icon: "success",
+          title: "Login Berhasil!",
+          text: data.message || "Selamat datang kembali!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
 
         // Redirect to dashboard
-        setTimeout(() => {
-          window.location.replace("dasboard_login.html");
-        }, 100);
+        window.location.replace("dasboard_login.html");
       } else {
         console.error("Login failed - no token received");
-        alert("Login gagal. Silakan coba lagi.");
+        // Error alert with SweetAlert2
+        Swal.fire({
+          icon: "error",
+          title: "Login Gagal",
+          text: "Silakan coba lagi.",
+          confirmButtonColor: "#1e3a5f",
+        });
       }
     } catch (error) {
       console.error("Login error:", error);
-      alert("Terjadi kesalahan saat login. Silakan coba lagi.");
+      // Error alert with SweetAlert2
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Terjadi kesalahan saat login. Silakan coba lagi.",
+        confirmButtonColor: "#1e3a5f",
+      });
     }
   });
 });
