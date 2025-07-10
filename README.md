@@ -347,7 +347,7 @@ Kami sangat menghargai kontribusi Anda! Silakan baca [CONTRIBUTING.md](CONTRIBUT
       <br />
       <sub>Backend Developer</sub>
       <br />
-      <a href="https://github.com/litelmrpi">GitHub</a>
+      <a href="https://github.com/litelmurpi">GitHub</a>
     </td>
     <td align="center">
       <img src="https://github.com/identicons/ratih.png" width="100px;" alt="Ratih Intan"/>
