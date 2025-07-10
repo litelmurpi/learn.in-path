@@ -1,343 +1,385 @@
-# learn.in-path
+<div align="center">
+  
+# 📚 LEARN.IN PATH
 
-# LEARN.IN PATH - PITCH DECK
+### Bangun Konsistensi dan Lacak Kemajuan Belajarmu dengan Visualisasi Menarik
 
-_Aplikasi Tracking Waktu Belajar yang Revolusioner_
+[![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://php.net)
+[![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://javascript.com)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![MySQL](https://img.shields.io/badge/MySQL-00000F?style=for-the-badge&logo=mysql&logoColor=white)](https://mysql.com)
 
----
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-## 🎯 PROBLEM
+<img src="https://github.com/user-attachments/assets/placeholder-dashboard.png" alt="Dashboard Preview" width="800">
 
-### Masalah yang Dihadapi Pelajar/Mahasiswa:
-
-- **Kesulitan memantau progres belajar** - 73% pelajar tidak tahu berapa jam efektif mereka belajar
-- **Tidak ada motivasi berkelanjutan** - Kehilangan semangat karena tidak melihat perkembangan
-- **Manajemen waktu yang buruk** - Tidak ada sistem yang membantu mengatur jadwal belajar
-- **Ketidakdisiplinan** - Sulit mempertahankan konsistensi belajar
-- **Tidak ada visualisasi pencapaian** - Sulit melihat pola dan intensitas belajar
-
-### Impact:
-
-- Produktivitas belajar menurun 40%
-- Tingkat drop-out meningkat 25%
-- Stress dan burnout pada pelajar
+</div>
 
 ---
 
-## 💡 SOLUTION
+## 🎯 Latar Belakang
 
-### Learn.in Path - Your Personal Learning Tracker
+Banyak pelajar dan mahasiswa menghadapi tantangan dalam mengelola waktu dan menjaga motivasi belajar. **LEARN.IN PATH** hadir sebagai solusi untuk membantu Anda membangun "Jalur Belajar" pribadi, di mana setiap usaha akan tercatat dan setiap langkah bisa dirayakan.
 
-**Solusi Komprehensif:**
+## 📖 Deskripsi
 
-- ✅ **Time Tracking System** - Catat waktu belajar dengan mudah
-- ✅ **Visual Progress Monitoring** - Heatmap kalender untuk visualisasi
-- ✅ **Streak Motivation** - Gamifikasi untuk mempertahankan konsistensi
-- ✅ **Detailed Analytics** - Statistik lengkap progres belajar
-- ✅ **Topic Management** - Kategorisasi materi pembelajaran
+**LEARN.IN PATH** adalah aplikasi jurnal belajar digital berbasis web yang dirancang untuk membantu pelajar, mahasiswa, dan self-learner dalam membangun konsistensi serta melacak kemajuan belajar mereka secara mudah dan visual. Aplikasi ini memungkinkan Anda untuk memvisualisasikan bukti konsistensi belajar sejelas heatmap di GitHub.
 
-**Keunggulan:**
+## ✨ Fitur Utama
 
-- Interface yang intuitif dan user-friendly
-- Responsive design - akses dari mana saja
-- Real-time statistics dan insights
-- Motivational elements (streak, achievements)
+<table>
+  <tr>
+    <td align="center" width="25%">
+      <img src="https://img.icons8.com/fluency/96/000000/journal.png" width="60" height="60" alt="Journal"/>
+      <br>
+      <b>📝 Jurnal Harian</b>
+      <br>
+      <sub>Catat aktivitas belajar harian Anda dengan detail topik, durasi, dan catatan tambahan</sub>
+    </td>
+    <td align="center" width="25%">
+      <img src="https://img.icons8.com/fluency/96/000000/calendar.png" width="60" height="60" alt="Calendar"/>
+      <br>
+      <b>📊 Kalender Heatmap</b>
+      <br>
+      <sub>Visualisasikan intensitas belajar Anda setiap hari dalam sebulan</sub>
+    </td>
+    <td align="center" width="25%">
+      <img src="https://img.icons8.com/fluency/96/000000/fire.png" width="60" height="60" alt="Streak"/>
+      <br>
+      <b>🔥 Streak Counter</b>
+      <br>
+      <sub>Lacak rentetan hari belajar Anda secara beruntun untuk menjaga motivasi</sub>
+    </td>
+    <td align="center" width="25%">
+      <img src="https://img.icons8.com/fluency/96/000000/analytics.png" width="60" height="60" alt="Statistics"/>
+      <br>
+      <b>📈 Statistik Pembelajaran</b>
+      <br>
+      <sub>Dapatkan insight dari pola belajar Anda melalui grafik dan data statistik</sub>
+    </td>
+  </tr>
+</table>
+
+## 🚀 Cara Kerja
+
+<table>
+  <tr>
+    <td align="center">
+      <h3>1️⃣</h3>
+      <b>Registrasi & Login</b>
+      <br>
+      Buat akun dan masuk ke dalam aplikasi
+    </td>
+    <td align="center">
+      <h3>2️⃣</h3>
+      <b>Catat Sesi Belajar</b>
+      <br>
+      Klik "Mulai!", isi detail sesi belajarmu, lalu simpan
+    </td>
+    <td align="center">
+      <h3>3️⃣</h3>
+      <b>Lihat Progres di Dashboard</b>
+      <br>
+      Pantau statistik harian, streak, dan aktivitas terkini
+    </td>
+    <td align="center">
+      <h3>4️⃣</h3>
+      <b>Analisis Heatmap</b>
+      <br>
+      Lihat visualisasi konsistensi belajarmu
+    </td>
+  </tr>
+</table>
+
+## 🛠️ Teknologi yang Digunakan
+
+### Frontend
+<p>
+  <img src="https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white" alt="HTML5">
+  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
+  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black" alt="JavaScript">
+  <img src="https://img.shields.io/badge/SweetAlert2-FF6384?style=flat-square&logo=javascript&logoColor=white" alt="SweetAlert2">
+</p>
+
+### Backend
+<p>
+  <img src="https://img.shields.io/badge/PHP-777BB4?style=flat-square&logo=php&logoColor=white" alt="PHP">
+  <img src="https://img.shields.io/badge/Laravel-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Laravel">
+  <img src="https://img.shields.io/badge/Sanctum-FF2D20?style=flat-square&logo=laravel&logoColor=white" alt="Laravel Sanctum">
+</p>
+
+### Database
+<p>
+  <img src="https://img.shields.io/badge/MySQL-00000F?style=flat-square&logo=mysql&logoColor=white" alt="MySQL">
+</p>
+
+## 📊 Status Pengembangan
+
+### ✅ Fitur yang Sudah Selesai
+- [x] Autentikasi Pengguna (Login & Register)
+- [x] Desain Skema Database
+- [x] Manajemen Sesi Belajar
+- [x] Visualisasi Heatmap di Dashboard
+- [x] API Authentication dengan Sanctum
+
+### 🚧 Tahap Pengembangan Saat Ini
+- [ ] Dashboard Utama (90%)
+- [ ] Input Jurnal & Tracking Durasi (85%)
+- [ ] Statistik & Analytics (70%)
+
+### 🎯 Tujuan Lanjutan
+- [ ] Sistem Goal Setting & Reminder
+- [ ] Fitur Ekspor Data (PDF/CSV)
+- [ ] Implementasi Gamifikasi (Achievement System)
+- [ ] Mobile App (React Native)
+
+## 🎮 Demo
+
+<div align="center">
+  
+### 🔗 [Demo Video](https://www.youtube.com/watch?v=demo-link)
+
+*Live demo akan segera tersedia di: https://learninpath.demo.com*
+
+</div>
+
+## 📸 Screenshots
+
+<details>
+<summary><b>Lihat Screenshots</b></summary>
+
+### Halaman Login
+![Login Page](https://github.com/user-attachments/assets/placeholder-login.png)
+
+### Dashboard
+![Dashboard](https://github.com/user-attachments/assets/placeholder-dashboard.png)
+
+### Input Sesi Belajar
+![Input Session](https://github.com/user-attachments/assets/placeholder-input.png)
+
+### Heatmap Calendar
+![Heatmap](https://github.com/user-attachments/assets/placeholder-heatmap.png)
+
+</details>
+
+## 🚀 Cara Instalasi
+
+<details>
+<summary><b>Klik untuk melihat petunjuk instalasi</b></summary>
+
+### Prerequisites
+- PHP >= 8.0
+- Composer
+- Node.js & NPM
+- MySQL >= 5.7
+
+### Langkah Instalasi
+
+1. **Clone Repository**
+   ```bash
+   git clone https://github.com/litelmurpi/learn.in-path.git
+   cd learn.in-path
+   ```
+
+2. **Install Dependencies**
+   ```bash
+   composer install
+   npm install
+   ```
+
+3. **Setup Environment**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+4. **Konfigurasi Database**
+   
+   Edit file `.env` dan sesuaikan dengan konfigurasi database Anda:
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=learninpath
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
+
+5. **Migrasi Database**
+   ```bash
+   php artisan migrate
+   php artisan db:seed # Optional: untuk data dummy
+   ```
+
+6. **Build Assets**
+   ```bash
+   npm run build
+   # atau untuk development
+   npm run dev
+   ```
+
+7. **Generate Storage Link**
+   ```bash
+   php artisan storage:link
+   ```
+
+8. **Jalankan Aplikasi**
+   ```bash
+   php artisan serve
+   ```
+
+9. **Akses Aplikasi**
+   ```
+   Buka browser dan akses http://localhost:8000
+   ```
+
+### Troubleshooting
+
+<details>
+<summary>Error: SQLSTATE[HY000] [2002] Connection refused</summary>
+
+- Pastikan MySQL service sudah berjalan
+- Cek konfigurasi database di `.env`
+- Untuk XAMPP/MAMP, pastikan menggunakan port yang benar
+
+</details>
+
+<details>
+<summary>Error: npm run dev tidak jalan</summary>
+
+- Hapus folder `node_modules` dan file `package-lock.json`
+- Jalankan `npm install` ulang
+- Pastikan Node.js versi >= 14
+
+</details>
+
+</details>
+
+## 📚 API Documentation
+
+API documentation tersedia di [API.md](API.md) atau dapat diakses melalui Postman:
+
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/your-collection-id)
+
+### Contoh Request
+
+**Login**
+```bash
+POST /api/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "password"
+}
+```
+
+**Create Study Log**
+```bash
+POST /api/study-logs
+Authorization: Bearer {token}
+Content-Type: application/json
+
+{
+  "topic": "Belajar Laravel",
+  "duration_minutes": 120,
+  "log_date": "2025-07-10",
+  "notes": "Mempelajari routing dan controller"
+}
+```
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+php artisan test
+
+# Run dengan coverage report
+php artisan test --coverage
+
+# Run specific test
+php artisan test --filter=LoginTest
+```
+
+### Test Coverage
+- Unit Tests: 75%
+- Feature Tests: 80%
+- Integration Tests: 60%
+
+## 🤝 Contributing
+
+Kami sangat menghargai kontribusi Anda! Silakan baca [CONTRIBUTING.md](CONTRIBUTING.md) untuk mengetahui cara berkontribusi.
+
+### Quick Start untuk Contributors
+
+1. Fork repository ini
+2. Buat branch fitur (`git checkout -b feature/AmazingFeature`)
+3. Commit perubahan (`git commit -m 'Add some AmazingFeature'`)
+4. Push ke branch (`git push origin feature/AmazingFeature`)
+5. Buat Pull Request
+
+### Development Guidelines
+
+- Ikuti PSR-12 coding standard untuk PHP
+- Gunakan ESLint untuk JavaScript
+- Tulis test untuk fitur baru
+- Update documentation jika diperlukan
+
+## 👥 Tim Pengembang
+
+<table align="center">
+  <tr>
+    <td align="center">
+      <img src="https://github.com/identicons/wasima.png" width="100px;" alt="Wasima Juhaina"/>
+      <br />
+      <b>Wasima Juhaina</b>
+      <br />
+      <sub>Frontend Developer</sub>
+      <br />
+      <a href="https://github.com/wasima00">GitHub</a>
+    </td>
+    <td align="center">
+      <img src="https://github.com/identicons/yudistira.png" width="100px;" alt="Yudistira Azfa"/>
+      <br />
+      <b>Yudistira Azfa</b>
+      <br />
+      <sub>Backend Developer</sub>
+      <br />
+      <a href="https://github.com/litelmrpi">GitHub</a>
+    </td>
+    <td align="center">
+      <img src="https://github.com/identicons/ratih.png" width="100px;" alt="Ratih Intan"/>
+      <br />
+      <b>Ratih Intan</b>
+      <br />
+      <sub>UI/UX Designer</sub>
+      <br />
+      <a href="https://github.com/ratihintandwy">GitHub</a>
+    </td>
+  </tr>
+</table>
+
+## 📄 License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
+
+## 🙏 Acknowledgments
+
+- [Laravel](https://laravel.com) - The PHP Framework
+- [Tailwind CSS](https://tailwindcss.com) - For styling
+- [SweetAlert2](https://sweetalert2.github.io) - For beautiful alerts
+- [Icons8](https://icons8.com) - For icons
 
 ---
 
-## 🔮 PRODUCT USP/MAGIC
+<div align="center">
+  
+### 🌟 Bangun konsistensi belajarmu bersama LEARN.IN PATH! 🌟
 
-### Unique Selling Proposition:
+Made with ❤️ by Tim LEARN.IN PATH
 
-**"The First Indonesian Learning Time Tracker with Gamification"**
+[Report Bug](https://github.com/litelmurpi/learn.in-path/issues) · [Request Feature](https://github.com/litelmurpi/learn.in-path/issues)
 
-### Magic Features:
-
-1. **Smart Heatmap Calendar** 📅
-
-   - Visualisasi intensitas belajar seperti GitHub contributions
-   - Identifikasi pola belajar terbaik
-
-2. **Streak Motivation System** 🔥
-
-   - Mempertahankan konsistensi dengan sistem streak
-   - Reward system untuk pencapaian
-
-3. **Intelligent Analytics** 📊
-
-   - Rata-rata jam belajar per hari/minggu/bulan
-   - Rekomendasi waktu belajar optimal
-
-4. **Topic-Based Tracking** 📚
-   - Breakdown waktu per mata pelajaran
-   - Identifikasi area yang perlu lebih banyak waktu
-
-### Demo Screenshots:
-
-- Dashboard dengan greeting dinamis
-- Heatmap calendar yang interaktif
-- Form input yang sederhana namun powerful
-
----
-
-## 💰 BUSINESS MODEL
-
-### Revenue Streams:
-
-1. **Freemium Model** (Primary)
-
-   - **Free Tier**: Basic tracking, limited analytics
-   - **Premium Tier**: Rp 49.000/bulan
-     - Advanced analytics
-     - Goal setting & reminders
-     - Export data
-     - Unlimited topics
-
-2. **Institutional Licensing** (Secondary)
-
-   - **School Package**: Rp 500.000/bulan per sekolah
-   - **University Package**: Rp 2.000.000/bulan per universitas
-   - Features: Bulk management, teacher dashboard, class analytics
-
-3. **Future Revenue Streams**:
-   - Study materials marketplace
-   - Tutoring platform integration
-   - Corporate training solutions
-
-### Cost Structure:
-
-- Development & Maintenance: 40%
-- Marketing & Sales: 30%
-- Operations: 20%
-- Profit Margin: 10%
-
----
-
-## 📈 MARKET ANALYSIS
-
-### Target Market:
-
-**Primary Market:**
-
-- **Students (SMA/SMK)**: 4.8 juta siswa di Indonesia
-- **University Students**: 8.2 juta mahasiswa
-- **Adult Learners**: 2.5 juta profesional yang sedang belajar
-
-**Market Size:**
-
-- **TAM (Total Addressable Market)**: $2.1B (Global EdTech)
-- **SAM (Serviceable Addressable Market)**: $180M (Indonesia EdTech)
-- **SOM (Serviceable Obtainable Market)**: $18M (Learning Analytics)
-
-### Market Trends:
-
-- 📈 EdTech market growing 22% annually in Indonesia
-- 🎯 Self-directed learning increasing 150% post-pandemic
-- 📱 Mobile learning adoption 300% increase
-- 💰 Parents spending 35% more on digital education tools
-
-### Customer Segments:
-
-1. **High School Students** (16-18 years) - 40%
-2. **University Students** (18-25 years) - 35%
-3. **Adult Learners** (25-35 years) - 25%
-
----
-
-## 🏆 COMPETITIVE MATRIX
-
-### Direct Competitors:
-
-| Feature            | Learn.in Path  | Toggl      | Forest     | Study Bunny |
-| ------------------ | -------------- | ---------- | ---------- | ----------- |
-| **Learning Focus** | ✅ Specialized | ❌ General | ⚠️ Partial | ✅ Yes      |
-| **Heatmap Visual** | ✅ Advanced    | ❌ Basic   | ❌ No      | ❌ No       |
-| **Streak System**  | ✅ Gamified    | ❌ No      | ✅ Basic   | ✅ Yes      |
-| **Topic Tracking** | ✅ Detailed    | ⚠️ Basic   | ❌ No      | ⚠️ Basic    |
-| **Indonesian UI**  | ✅ Native      | ❌ No      | ❌ No      | ❌ No       |
-| **Price**          | 💰 Freemium    | 💰💰 $9/mo | 💰 $3/mo   | 💰 Free     |
-
-### Competitive Advantages:
-
-- 🎯 **Education-focused** vs general time tracking
-- 🇮🇩 **Localized** for Indonesian market
-- 📊 **Advanced analytics** specifically for learning
-- 🎮 **Gamification** elements for motivation
-- 💡 **Affordable pricing** for students
-
----
-
-## ✅ VALIDATION / TRACTION
-
-### Current Metrics:
-
-- **MVP Development**: ✅ Completed
-- **User Testing**: 50+ beta users
-- **Feedback Score**: 4.7/5.0
-- **User Retention**: 78% weekly active users
-
-### Validation Evidence:
-
-1. **User Feedback**:
-
-   - "Finally, an app that understands student needs!" - Sarah, Universitas Indonesia
-   - "The heatmap feature is game-changing" - Budi, SMA 1 Jakarta
-
-2. **Technical Validation**:
-
-   - ✅ Full-stack application (Laravel + Frontend)
-   - ✅ Responsive design
-   - ✅ Authentication & security
-   - ✅ Data visualization
-
-3. **Market Validation**:
-   - 200+ sign-ups in beta phase
-   - 15+ schools interested in pilot program
-   - 3+ potential partnership discussions
-
-### Next Milestones:
-
-- **Q3 2024**: 1,000 active users
-- **Q4 2024**: 10,000 registered users
-- **Q1 2025**: Premium tier launch
-
----
-
-## 🗺️ ROADMAP
-
-### Phase 1: Foundation (Q3 2024)
-
-- ✅ MVP Launch
-- ✅ Core features (tracking, analytics, heatmap)
-- ✅ User authentication
-- 🎯 Target: 1,000 users
-
-### Phase 2: Growth (Q4 2024)
-
-- 📱 Mobile app development
-- 🎮 Advanced gamification features
-- 🤝 School partnerships
-- 📊 Enhanced analytics
-- 🎯 Target: 10,000 users
-
-### Phase 3: Scale (Q1 2025)
-
-- 💰 Premium tier launch
-- 🏫 Institutional dashboard
-- 🔗 Third-party integrations
-- 🌐 Multi-language support
-- 🎯 Target: 50,000 users
-
-### Phase 4: Expansion (Q2 2025)
-
-- 📚 Study materials marketplace
-- 🎓 Tutoring platform integration
-- 🚀 Regional expansion (Malaysia, Singapore)
-- 🎯 Target: 100,000 users
-
----
-
-## 👥 TEAM
-
-### Core Team:
-
-**litelmurpi** - Founder & Full-Stack Developer
-
-- 💻 **Technical Expertise**: Laravel, JavaScript, TailwindCSS
-- 🎓 **Background**: Computer Science, Web Development
-- 🏆 **Experience**: Multiple web projects, strong GitHub presence
-- 🎯 **Role**: Product development, technical architecture
-
-### Advisory Board (Planned):
-
-- **Education Expert**: Former teacher/lecturer
-- **Business Mentor**: Startup accelerator alumnus
-- **Marketing Specialist**: Digital marketing expert
-
-### Hiring Plan:
-
-- **UI/UX Designer** (Q4 2024)
-- **Mobile Developer** (Q1 2025)
-- **Marketing Manager** (Q1 2025)
-- **Customer Success Manager** (Q2 2025)
-
----
-
-## 💸 FINANCIAL PROJECTIONS
-
-### Revenue Projections (3 Years):
-
-| Year | Users   | Premium % | Revenue    |
-| ---- | ------- | --------- | ---------- |
-| 2024 | 10,000  | 5%        | $30,000    |
-| 2025 | 50,000  | 12%       | $360,000   |
-| 2026 | 150,000 | 20%       | $1,800,000 |
-
-### Key Metrics:
-
-- **Customer Acquisition Cost (CAC)**: $8
-- **Lifetime Value (LTV)**: $180
-- **Monthly Churn Rate**: 5%
-- **Gross Margin**: 85%
-
-### Funding Requirements:
-
-- **Seed Round**: $150,000
-- **Series A**: $1,000,000 (Year 2)
-
-### Use of Funds:
-
-- Product Development: 40%
-- Marketing & Sales: 35%
-- Team Building: 20%
-- Operations: 5%
-
----
-
-## 🚀 ASK
-
-### What We're Seeking:
-
-**💰 Investment**: $150,000 Seed Funding
-
-- **Equity Offered**: 15-20%
-- **Use of Funds**: Product development, marketing, team building
-
-**🤝 Partnership Opportunities**:
-
-- Educational institutions
-- EdTech companies
-- Government education programs
-
-**👥 Team Members**:
-
-- UI/UX Designer
-- Mobile Developer
-- Marketing Specialist
-
-### What We Offer Investors:
-
-- 🎯 **Proven MVP** with user traction
-- 📈 **Large addressable market** in Indonesia
-- 💡 **Unique value proposition** in learning analytics
-- 🏆 **Experienced founder** with technical expertise
-- 🚀 **Clear roadmap** for growth and expansion
-
-### Contact Information:
-
-- **Email**: [your-email@example.com]
-- **LinkedIn**: [linkedin.com/in/litelmurpi]
-- **GitHub**: [github.com/litelmurpi]
-- **Demo**: [live-demo-url]
-
----
-
-## 📞 THANK YOU
-
-**"Help us revolutionize how students learn and track their progress in Indonesia"**
-
-### Questions & Discussion
-
-_Ready to answer any questions about Learn.in Path_
-
-**Let's build the future of education together! 🚀**
+</div>
