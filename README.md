@@ -314,7 +314,12 @@ SESSION_DOMAIN=localhost
 ### 🚧 Tahap Pengembangan Saat Ini
 - [ ] Dashboard Utama (90%)
 - [ ] Input Jurnal & Tracking Durasi (85%)
-- [ ] Statistik & Analytics (70%)
+- [ ] Statistik & Analytics (40%) ⚠️
+  - [x] API endpoints
+  - [x] Basic heatmap
+  - [ ] Charts & graphs
+  - [ ] Detailed analytics page
+  - [ ] Export features
 
 ### 🎯 Tujuan Lanjutan
 - [ ] Sistem Goal Setting & Reminder
