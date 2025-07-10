@@ -62,36 +62,223 @@ Banyak pelajar dan mahasiswa menghadapi tantangan dalam mengelola waktu dan menj
   </tr>
 </table>
 
-## 🚀 Cara Kerja
+## 🚀 Cara Instalasi & Menjalankan Project
 
-<table>
-  <tr>
-    <td align="center">
-      <h3>1️⃣</h3>
-      <b>Registrasi & Login</b>
-      <br>
-      Buat akun dan masuk ke dalam aplikasi
-    </td>
-    <td align="center">
-      <h3>2️⃣</h3>
-      <b>Catat Sesi Belajar</b>
-      <br>
-      Klik "Mulai!", isi detail sesi belajarmu, lalu simpan
-    </td>
-    <td align="center">
-      <h3>3️⃣</h3>
-      <b>Lihat Progres di Dashboard</b>
-      <br>
-      Pantau statistik harian, streak, dan aktivitas terkini
-    </td>
-    <td align="center">
-      <h3>4️⃣</h3>
-      <b>Analisis Heatmap</b>
-      <br>
-      Lihat visualisasi konsistensi belajarmu
-    </td>
-  </tr>
-</table>
+### Prerequisites
+
+Pastikan Anda sudah menginstall:
+- **PHP** >= 8.0 ([Download](https://www.php.net/downloads))
+- **Composer** ([Download](https://getcomposer.org/download/))
+- **Node.js** >= 14.x & NPM ([Download](https://nodejs.org/))
+- **MySQL** >= 5.7 atau MariaDB ([Download](https://www.mysql.com/downloads/))
+- **Git** ([Download](https://git-scm.com/downloads))
+
+### 📥 Clone Repository
+
+```bash
+git clone https://github.com/litelmurpi/learn.in-path.git
+cd learn.in-path
+```
+
+### 🔧 Setup Backend (Laravel)
+
+1. **Masuk ke folder backend**
+   ```bash
+   cd backend
+   ```
+
+2. **Install dependencies PHP**
+   ```bash
+   composer install
+   ```
+
+3. **Copy file environment**
+   ```bash
+   cp .env.example .env
+   ```
+
+4. **Generate application key**
+   ```bash
+   php artisan key:generate
+   ```
+
+5. **Setup Database**
+   
+   Buat database MySQL baru:
+   ```sql
+   CREATE DATABASE learnin_path;
+   ```
+   
+   Edit file `.env` dan sesuaikan konfigurasi database:
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=learnin_path
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
+
+6. **Jalankan migrasi database**
+   ```bash
+   php artisan migrate
+   ```
+
+7. **Seed database (opsional, untuk data dummy)**
+   ```bash
+   php artisan db:seed
+   ```
+
+8. **Generate storage link**
+   ```bash
+   php artisan storage:link
+   ```
+
+9. **Jalankan backend server**
+   ```bash
+   php artisan serve
+   ```
+   Backend akan berjalan di `http://127.0.0.1:8000`
+
+### 💻 Setup Frontend
+
+1. **Buka terminal baru dan masuk ke folder frontend**
+   ```bash
+   cd frontend
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Build Tailwind CSS**
+   ```bash
+   npx tailwindcss -i ./src/input.css -o ./dist/output.css --watch
+   ```
+   
+   Command ini akan:
+   - Mengcompile Tailwind CSS dari `src/input.css`
+   - Output ke `dist/output.css`
+   - Mode `--watch` akan otomatis recompile saat ada perubahan
+
+4. **Jalankan Development Server**
+   
+   Buka terminal baru (biarkan Tailwind watch tetap jalan) dan jalankan:
+   ```bash
+   php -S localhost:8080
+   ```
+   
+   Frontend akan berjalan di `http://localhost:8080`
+
+### ✅ Verifikasi Instalasi
+
+1. **Backend**: Buka `http://127.0.0.1:8000` - Anda akan melihat Laravel welcome page
+2. **Frontend**: Buka `http://localhost:8080` - Anda akan melihat halaman login LEARN.IN PATH
+3. **API Test**: Buka `http://127.0.0.1:8000/api/test` untuk memastikan API berjalan
+
+### 🏃‍♂️ Running Development
+
+Untuk development, Anda memerlukan 3 terminal:
+
+**Terminal 1 - Backend:**
+```bash
+cd backend
+php artisan serve
+```
+
+**Terminal 2 - Tailwind CSS Watch:**
+```bash
+cd frontend
+npx tailwindcss -i ./src/input.css -o ./dist/output.css --watch
+```
+
+**Terminal 3 - Frontend Server:**
+```bash
+cd frontend
+php -S localhost:8080
+```
+
+### 🐛 Troubleshooting
+
+<details>
+<summary><b>Error: SQLSTATE[HY000] [2002] Connection refused</b></summary>
+
+- Pastikan MySQL service sudah berjalan
+- Windows: Buka Services dan cari MySQL
+- Mac: `brew services start mysql`
+- Linux: `sudo systemctl start mysql`
+</details>
+
+<details>
+<summary><b>Error: CORS Policy Block</b></summary>
+
+1. Pastikan backend berjalan di `http://127.0.0.1:8000`
+2. Pastikan frontend berjalan di `http://localhost:8080`
+3. Update file `backend/config/cors.php`:
+   ```php
+   'allowed_origins' => [
+       'http://127.0.0.1:8080',
+       'http://localhost:8080',
+   ],
+   ```
+4. Update `.env` di backend:
+   ```env
+   FRONTEND_URL=http://localhost:8080
+   SANCTUM_STATEFUL_DOMAINS=localhost,localhost:8080,127.0.0.1,127.0.0.1:8080
+   ```
+</details>
+
+<details>
+<summary><b>Error: 419 Page Expired</b></summary>
+
+Clear cache Laravel:
+```bash
+cd backend
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+```
+</details>
+
+<details>
+<summary><b>Tailwind CSS tidak ter-compile</b></summary>
+
+1. Pastikan path file benar:
+   - Input: `frontend/src/input.css`
+   - Output: `frontend/dist/output.css`
+
+2. Pastikan `tailwind.config.js` ada dan configured:
+   ```javascript
+   module.exports = {
+     content: ["./**/*.{html,js}"],
+     theme: {
+       extend: {},
+     },
+     plugins: [],
+   }
+   ```
+
+3. Re-install dependencies:
+   ```bash
+   cd frontend
+   rm -rf node_modules package-lock.json
+   npm install
+   ```
+</details>
+
+### 🔒 Environment Variables
+
+Pastikan konfigurasi `.env` di backend sudah sesuai:
+
+```env
+# Frontend URL untuk CORS
+FRONTEND_URL=http://localhost:8080
+
+# Sanctum Configuration
+SANCTUM_STATEFUL_DOMAINS=localhost,localhost:8080,127.0.0.1,127.0.0.1:8080
+SESSION_DOMAIN=localhost
+```
 
 ## 🛠️ Teknologi yang Digunakan
 
@@ -145,204 +332,26 @@ Banyak pelajar dan mahasiswa menghadapi tantangan dalam mengelola waktu dan menj
 
 </div>
 
-## 📸 Screenshots
-
-<details>
-<summary><b>Lihat Screenshots</b></summary>
-
-### Halaman Login
-![Login Page](https://github.com/user-attachments/assets/placeholder-login.png)
-
-### Dashboard
-![Dashboard](https://github.com/user-attachments/assets/placeholder-dashboard.png)
-
-### Input Sesi Belajar
-![Input Session](https://github.com/user-attachments/assets/placeholder-input.png)
-
-### Heatmap Calendar
-![Heatmap](https://github.com/user-attachments/assets/placeholder-heatmap.png)
-
-</details>
-
-## 🚀 Cara Instalasi
-
-<details>
-<summary><b>Klik untuk melihat petunjuk instalasi</b></summary>
-
-### Prerequisites
-- PHP >= 8.0
-- Composer
-- Node.js & NPM
-- MySQL >= 5.7
-
-### Langkah Instalasi
-
-1. **Clone Repository**
-   ```bash
-   git clone https://github.com/litelmurpi/learn.in-path.git
-   cd learn.in-path
-   ```
-
-2. **Install Dependencies**
-   ```bash
-   composer install
-   npm install
-   ```
-
-3. **Setup Environment**
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
-
-4. **Konfigurasi Database**
-   
-   Edit file `.env` dan sesuaikan dengan konfigurasi database Anda:
-   ```env
-   DB_CONNECTION=mysql
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
-   DB_DATABASE=learninpath
-   DB_USERNAME=root
-   DB_PASSWORD=
-   ```
-
-5. **Migrasi Database**
-   ```bash
-   php artisan migrate
-   php artisan db:seed # Optional: untuk data dummy
-   ```
-
-6. **Build Assets**
-   ```bash
-   npm run build
-   # atau untuk development
-   npm run dev
-   ```
-
-7. **Generate Storage Link**
-   ```bash
-   php artisan storage:link
-   ```
-
-8. **Jalankan Aplikasi**
-   ```bash
-   php artisan serve
-   ```
-
-9. **Akses Aplikasi**
-   ```
-   Buka browser dan akses http://localhost:8000
-   ```
-
-### Troubleshooting
-
-<details>
-<summary>Error: SQLSTATE[HY000] [2002] Connection refused</summary>
-
-- Pastikan MySQL service sudah berjalan
-- Cek konfigurasi database di `.env`
-- Untuk XAMPP/MAMP, pastikan menggunakan port yang benar
-
-</details>
-
-<details>
-<summary>Error: npm run dev tidak jalan</summary>
-
-- Hapus folder `node_modules` dan file `package-lock.json`
-- Jalankan `npm install` ulang
-- Pastikan Node.js versi >= 14
-
-</details>
-
-</details>
-
 ## 📚 API Documentation
 
 API documentation tersedia di [API.md](API.md) atau dapat diakses melalui Postman:
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/your-collection-id)
 
-### Contoh Request
-
-**Login**
-```bash
-POST /api/login
-Content-Type: application/json
-
-{
-  "email": "user@example.com",
-  "password": "password"
-}
-```
-
-**Create Study Log**
-```bash
-POST /api/study-logs
-Authorization: Bearer {token}
-Content-Type: application/json
-
-{
-  "topic": "Belajar Laravel",
-  "duration_minutes": 120,
-  "log_date": "2025-07-10",
-  "notes": "Mempelajari routing dan controller"
-}
-```
-
 ## 🧪 Testing
 
 ```bash
-# Run all tests
+# Backend tests
+cd backend
 php artisan test
 
 # Run dengan coverage report
 php artisan test --coverage
-
-# Run specific test
-php artisan test --filter=LoginTest
 ```
-
-### Test Coverage
-- Unit Tests: 75%
-- Feature Tests: 80%
-- Integration Tests: 60%
 
 ## 🤝 Contributing
 
 Kami sangat menghargai kontribusi Anda! Silakan baca [CONTRIBUTING.md](CONTRIBUTING.md) untuk mengetahui cara berkontribusi.
-
-### Quick Start untuk Contributors
-
-1. Fork repository ini
-2. Buat branch fitur (`git checkout -b feature/AmazingFeature`)
-3. Commit perubahan (`git commit -m 'Add some AmazingFeature'`)
-4. Push ke branch (`git push origin feature/AmazingFeature`)
-5. Buat Pull Request
-
-### Development Guidelines
-
-- Ikuti PSR-12 coding standard untuk PHP
-- Gunakan ESLint untuk JavaScript
-- Tulis test untuk fitur baru
-- Update documentation jika diperlukan
-
-1. **CORS Configuration**
-   - Pastikan `FRONTEND_URL` di `.env` sesuai dengan URL frontend Anda
-   - Jika frontend berjalan di port berbeda, update juga di `config/cors.php`
-
-2. **Sanctum Configuration**
-   - Update `SANCTUM_STATEFUL_DOMAINS` dengan semua domain yang akan mengakses API
-   - Untuk production, gunakan domain sebenarnya
-
-3. **Development Setup**
-   ```bash
-   # Backend (Laravel)
-   php artisan serve # Berjalan di http://127.0.0.1:8000
-
-   # Frontend 
-   # Pastikan berjalan di http://127.0.0.1:8080
-   # atau update CORS settings sesuai port yang digunakan
 
 ## 👥 Tim Pengembang
 
@@ -355,10 +364,10 @@ Kami sangat menghargai kontribusi Anda! Silakan baca [CONTRIBUTING.md](CONTRIBUT
       <br />
       <sub>Frontend Developer</sub>
       <br />
-      <a href="https://github.com/wasima00">GitHub</a>
+      <a href="https://github.com/wasima">GitHub</a>
     </td>
     <td align="center">
-      <img src="https://github.com/identicons/yudistira.png" width="100px;" alt="Yudistira Azfa"/>
+      <img src="https://github.com/identicons/litelmurpi.png" width="100px;" alt="Yudistira Azfa"/>
       <br />
       <b>Yudistira Azfa</b>
       <br />
@@ -373,7 +382,7 @@ Kami sangat menghargai kontribusi Anda! Silakan baca [CONTRIBUTING.md](CONTRIBUT
       <br />
       <sub>UI/UX Designer</sub>
       <br />
-      <a href="https://github.com/ratihintandwy">GitHub</a>
+      <a href="https://github.com/ratih">GitHub</a>
     </td>
   </tr>
 </table>
