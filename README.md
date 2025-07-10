@@ -327,6 +327,23 @@ Kami sangat menghargai kontribusi Anda! Silakan baca [CONTRIBUTING.md](CONTRIBUT
 - Tulis test untuk fitur baru
 - Update documentation jika diperlukan
 
+1. **CORS Configuration**
+   - Pastikan `FRONTEND_URL` di `.env` sesuai dengan URL frontend Anda
+   - Jika frontend berjalan di port berbeda, update juga di `config/cors.php`
+
+2. **Sanctum Configuration**
+   - Update `SANCTUM_STATEFUL_DOMAINS` dengan semua domain yang akan mengakses API
+   - Untuk production, gunakan domain sebenarnya
+
+3. **Development Setup**
+   ```bash
+   # Backend (Laravel)
+   php artisan serve # Berjalan di http://127.0.0.1:8000
+
+   # Frontend 
+   # Pastikan berjalan di http://127.0.0.1:8080
+   # atau update CORS settings sesuai port yang digunakan
+
 ## 👥 Tim Pengembang
 
 <table align="center">
