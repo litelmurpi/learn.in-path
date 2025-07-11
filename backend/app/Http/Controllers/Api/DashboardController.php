@@ -91,9 +91,11 @@ class DashboardController extends Controller
      */
     private function getTotalTimeThisMonth(int $userId): int
     {
+        $now = Carbon::now('Asia/Jakarta');
+        
         return StudyLog::where('user_id', $userId)
-            ->whereMonth('log_date', Carbon::now()->month)
-            ->whereYear('log_date', Carbon::now()->year)
+            ->whereMonth('log_date', $now->month)
+            ->whereYear('log_date', $now->year)
             ->sum('duration_minutes');
     }
     
@@ -102,8 +104,10 @@ class DashboardController extends Controller
      */
     private function getSessionsToday(int $userId): int
     {
+        $today = Carbon::now('Asia/Jakarta')->toDateString();
+        
         return StudyLog::where('user_id', $userId)
-            ->whereDate('log_date', Carbon::today())
+            ->where('log_date', $today)
             ->count();
     }
     
@@ -132,12 +136,12 @@ class DashboardController extends Controller
             $userId = auth()->id();
             
             // Get data for the last 365 days
-            $endDate = Carbon::today();
-            $startDate = Carbon::today()->subDays(364); // 365 days including today
+            $endDate = Carbon::now('Asia/Jakarta')->startOfDay();
+            $startDate = Carbon::now('Asia/Jakarta')->startOfDay()->subDays(364);
             
             // Get aggregated data per day
             $heatmapData = StudyLog::where('user_id', $userId)
-                ->whereBetween('log_date', [$startDate, $endDate])
+                ->whereBetween('log_date', [$startDate->toDateString(), $endDate->toDateString()])
                 ->groupBy('log_date')
                 ->selectRaw('log_date as date, SUM(duration_minutes) as total_minutes, COUNT(*) as session_count')
                 ->orderBy('log_date', 'asc')
@@ -282,14 +286,14 @@ class DashboardController extends Controller
      */
     private function calculateCurrentStreak(int $userId): int
     {
-        $today = Carbon::today();
+        $today = Carbon::now('Asia/Jakarta')->startOfDay();
         $streak = 0;
         $currentDate = $today->copy();
         
         // Check backwards from today
         while (true) {
             $hasStudy = StudyLog::where('user_id', $userId)
-                ->whereDate('log_date', $currentDate)
+                ->where('log_date', $currentDate->toDateString())
                 ->exists();
             
             if ($hasStudy) {
@@ -297,7 +301,7 @@ class DashboardController extends Controller
                 $currentDate->subDay();
             } else {
                 // If today has no study, check yesterday for active streak
-                if ($streak == 0 && $currentDate->format('Y-m-d') == $today->format('Y-m-d')) {
+                if ($streak == 0 && $currentDate->toDateString() == $today->toDateString()) {
                     $currentDate->subDay();
                     continue;
                 }
