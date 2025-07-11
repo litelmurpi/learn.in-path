@@ -173,11 +173,88 @@ async function createLog(logData) {
   return data;
 }
 
+// Update study log
+async function updateLog(logId, logData) {
+  const token = getToken();
+  if (!token) throw new Error("No authentication token");
+
+  const response = await fetch(`${API_BASE_URL}/study-logs/${logId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+    body: JSON.stringify(logData),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    if (response.status === 422) {
+      const errors = Object.values(data.errors).flat().join("\n");
+      throw new Error(errors);
+    }
+    throw new Error(data.message || "Failed to update study log");
+  }
+
+  return data;
+}
+
+// Delete study log
+async function deleteLog(logId) {
+  const token = getToken();
+  if (!token) throw new Error("No authentication token");
+
+  const response = await fetch(`${API_BASE_URL}/study-logs/${logId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+    },
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to delete study log");
+  }
+
+  return data;
+}
+
+// Get logs by date
+async function getLogsByDate(date) {
+  const token = getToken();
+  if (!token) throw new Error("No authentication token");
+
+  const response = await fetch(
+    `${API_BASE_URL}/study-logs/by-date?date=${date}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || "Failed to get logs by date");
+  }
+
+  return data;
+}
+
 export {
   registerUser,
   login,
   getLogs,
   getHeatmapData,
   createLog,
+  updateLog,
+  deleteLog,
+  getLogsByDate,
   getUserProfile,
 };

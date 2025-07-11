@@ -1,11 +1,15 @@
-import { isAuthenticated, removeToken } from "./auth.js";
+import { isAuthenticated, removeToken, getToken } from "./auth.js";
+import { API_BASE_URL } from "./apiConfig.js";
 import {
   getLogs,
   getHeatmapData,
   createLog,
+  updateLog,
+  deleteLog as apiDeleteLog,
   getUserProfile,
 } from "./apiService.js";
 import { displayUserInfo, getUserData } from "./userInfo.js";
+import { parseAPIDate, formatDateDisplay } from "./dateUtils.js";
 
 // Lindungi halaman: jika tidak terotentikasi, arahkan ke login
 document.addEventListener("DOMContentLoaded", async () => {
@@ -13,6 +17,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     window.location.href = "login.html";
     return;
   }
+
+  // === TIMEZONE DEBUG ===
+  console.log("=== TIMEZONE DEBUG ===");
+  console.log(
+    "Browser timezone:",
+    Intl.DateTimeFormat().resolvedOptions().timeZone
+  );
+  console.log("Current date/time (local):", new Date().toString());
+  console.log("Current date/time (ISO):", new Date().toISOString());
+  console.log(
+    "Current date/time (WIB):",
+    new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+  );
 
   // Check if user data exists, if not fetch it
   let userData = getUserData();
@@ -34,19 +51,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Ambil elemen DOM dengan selector yang lebih spesifik
   const logoutButton = document.getElementById("logoutButton");
   const sessionForm = document.getElementById("sessionForm");
+  const editForm = document.getElementById("editForm");
   const recentActivitiesContainer = document.getElementById("recentActivities");
   const heatmapContainer = document.getElementById("heatmapCalendar");
 
   // Fix: Gunakan selector yang lebih spesifik untuk stat cards
   const statCards = document.querySelectorAll(".stat-card");
   const longestStreakElement = statCards[0]?.querySelector(
-    ".stat-value, .text-2xl, .text-3xl"
+    ".text-2xl, .text-3xl"
   );
-  const totalHoursElement = statCards[1]?.querySelector(
-    ".stat-value, .text-2xl, .text-3xl"
-  );
+  const totalHoursElement = statCards[1]?.querySelector(".text-2xl, .text-3xl");
   const todaySessionElement = statCards[2]?.querySelector(
-    ".stat-value, .text-2xl, .text-3xl"
+    ".text-2xl, .text-3xl"
   );
 
   console.log("Stat elements found:", {
@@ -59,289 +75,221 @@ document.addEventListener("DOMContentLoaded", async () => {
   let currentMonth = new Date().getMonth();
   let currentYear = new Date().getFullYear();
   let allLogs = []; // Simpan semua logs untuk kalkulasi ulang saat ganti bulan
+  let heatmapData = null; // Store heatmap data
+  let currentEditLogId = null; // Store current editing log ID
 
-  // Fungsi untuk memuat data dasbor
-  async function loadDashboardData(updateCalendarOnly = false) {
+  // Helper function to get today's date in WIB timezone
+  function getLocalToday() {
+    // Use en-CA locale to get YYYY-MM-DD format directly
+    const dateInWIB = new Date().toLocaleDateString("en-CA", {
+      timeZone: "Asia/Jakarta",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+
+    console.log("Today in WIB (getLocalToday):", dateInWIB);
+    return dateInWIB;
+  }
+
+  // Helper function to format date to YYYY-MM-DD
+  function formatDateToYYYYMMDD(date) {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  // Set max date to today for date inputs
+  function setMaxDateToToday() {
+    const today = getLocalToday();
+    const dateInput = document.getElementById("date");
+    const editDateInput = document.getElementById("editDate");
+
+    console.log("Setting max date to:", today);
+
+    if (dateInput) {
+      dateInput.max = today;
+      dateInput.value = today;
+    }
+
+    if (editDateInput) {
+      editDateInput.max = today;
+    }
+  }
+
+  // Initialize date inputs
+  setMaxDateToToday();
+
+  // Fungsi untuk memuat dashboard stats dari API
+  async function loadDashboardStats() {
+    const token = getToken();
+    if (!token) return;
+
     try {
-      if (!updateCalendarOnly) {
-        console.log("Loading dashboard data...");
+      const response = await fetch(`${API_BASE_URL}/dashboard/stats`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      });
 
-        // Try to get logs data
-        let logsResponse = null;
-        let heatmapResponse = null;
+      if (!response.ok) throw new Error("Failed to load stats");
 
-        try {
-          logsResponse = await getLogs();
-          console.log("Raw logs response:", logsResponse);
-        } catch (error) {
-          console.error("Error fetching logs:", error);
-        }
+      const result = await response.json();
+      const stats = result.data;
 
-        try {
-          heatmapResponse = await getHeatmapData();
-          console.log("Raw heatmap response:", heatmapResponse);
-        } catch (error) {
-          console.error("Error fetching heatmap:", error);
-        }
-
-        // Handle response dari StudyLogController dengan pagination
-        let logs = [];
-
-        // Different response formats handling
-        if (logsResponse) {
-          // If response has success property
-          if (logsResponse.success && logsResponse.data) {
-            if (
-              logsResponse.data.data &&
-              Array.isArray(logsResponse.data.data)
-            ) {
-              logs = logsResponse.data.data;
-            } else if (Array.isArray(logsResponse.data)) {
-              logs = logsResponse.data;
-            }
-          }
-          // If response has data property directly
-          else if (logsResponse.data) {
-            if (Array.isArray(logsResponse.data)) {
-              logs = logsResponse.data;
-            } else if (
-              logsResponse.data.data &&
-              Array.isArray(logsResponse.data.data)
-            ) {
-              logs = logsResponse.data.data;
-            }
-          }
-          // If response is array directly
-          else if (Array.isArray(logsResponse)) {
-            logs = logsResponse;
-          }
-          // If response has logs property
-          else if (logsResponse.logs && Array.isArray(logsResponse.logs)) {
-            logs = logsResponse.logs;
-          }
-        }
-
-        console.log("Processed logs array:", logs);
-        console.log("Number of logs:", logs.length);
-
-        allLogs = logs; // Simpan untuk digunakan saat navigasi bulan
-
-        // Update statistik
-        updateStatistics(logs);
-
-        // Render Aktivitas Terkini
-        renderRecentActivities(logs);
+      // Update UI dengan data real
+      if (longestStreakElement) {
+        longestStreakElement.textContent = `${stats.longest_streak} Hari`;
       }
 
-      // Render Calendar/Heatmap
-      renderCalendar(allLogs);
-    } catch (error) {
-      console.error("Gagal memuat data dasbor:", error);
-      console.error("Error detail:", error.stack);
+      if (totalHoursElement) {
+        totalHoursElement.textContent = stats.total_time_this_month.formatted;
+      }
 
-      if (error.message && error.message.includes("Token")) {
-        Swal.fire({
-          icon: "error",
-          title: "Sesi Berakhir",
-          text: "Sesi Anda telah berakhir. Silakan login kembali.",
-          confirmButtonColor: "#1e3a5f",
-        }).then(() => {
-          removeToken();
-          window.location.href = "login.html";
-        });
-      } else {
-        if (recentActivitiesContainer && !updateCalendarOnly) {
-          recentActivitiesContainer.innerHTML =
-            '<p class="text-red-500 text-center text-sm">Gagal memuat data. Silakan refresh halaman.</p>';
+      if (todaySessionElement) {
+        todaySessionElement.textContent = `${stats.sessions_today} Sesi`;
+      }
+    } catch (error) {
+      console.error("Error loading dashboard stats:", error);
+    }
+  }
+
+  // Fungsi untuk memuat data heatmap
+  async function loadHeatmapData() {
+    const token = getToken();
+    if (!token) return;
+
+    try {
+      const timestamp = new Date().getTime();
+      const response = await fetch(
+        `${API_BASE_URL}/dashboard/heatmap?t=${timestamp}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+            "Cache-Control": "no-cache",
+          },
         }
+      );
+
+      if (!response.ok) throw new Error("Failed to load heatmap");
+
+      const result = await response.json();
+      heatmapData = result.data;
+
+      console.log("Heatmap API response:", result);
+
+      // Render calendar dengan data heatmap
+      renderCalendarWithHeatmap();
+    } catch (error) {
+      console.error("Error loading heatmap data:", error);
+    }
+  }
+
+  // Fungsi untuk memuat aktivitas terkini
+  async function loadRecentActivities() {
+    const token = getToken();
+    if (!token) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/study-logs?per_page=5`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to load activities");
+
+      const result = await response.json();
+      const activities = result.data.data;
+
+      console.log("Recent activities:", activities);
+      renderRecentActivities(activities);
+    } catch (error) {
+      console.error("Error loading recent activities:", error);
+      if (recentActivitiesContainer) {
+        recentActivitiesContainer.innerHTML =
+          '<p class="text-gray-500 text-center text-sm">Gagal memuat aktivitas</p>';
       }
     }
   }
 
-  // Fungsi untuk render aktivitas terkini
-  function renderRecentActivities(logs) {
+  // Fungsi untuk render aktivitas terkini - FIXED
+  // Helper function untuk format tanggal yang konsisten
+  function formatDateFromAPI(dateString) {
+    // dateString format: "YYYY-MM-DD"
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "Mei",
+      "Jun",
+      "Jul",
+      "Agu",
+      "Sep",
+      "Okt",
+      "Nov",
+      "Des",
+    ];
+
+    const [year, month, day] = dateString
+      .split("-")
+      .map((num) => parseInt(num, 10));
+
+    // Return formatted string directly without Date object
+    return `${day} ${months[month - 1]} ${year}`;
+  }
+
+  // Dan update renderRecentActivities menggunakan helper ini:
+  function renderRecentActivities(activities) {
     if (!recentActivitiesContainer) return;
 
     recentActivitiesContainer.innerHTML = "";
 
-    if (!logs || logs.length === 0) {
+    if (!activities || activities.length === 0) {
       recentActivitiesContainer.innerHTML =
-        '<p class="text-gray-500 text-center text-sm">Belum ada aktivitas</p>';
+        '<p class="text-gray-500 text-center text-sm">Belum ada aktivitas. Mulai sesi pertama Anda!</p>';
       return;
     }
 
-    // Ambil 5 log terbaru
-    logs.slice(0, 5).forEach((log) => {
-      const topic = log.topic || "Tanpa Topik";
-      const totalMinutes = parseInt(log.duration_minutes) || 0;
-      const hours = Math.floor(totalMinutes / 60);
-      const minutes = totalMinutes % 60;
-      const logDate = new Date(log.log_date || log.created_at);
+    activities.forEach((activity) => {
+      const hours = Math.floor(activity.duration_minutes / 60);
+      const minutes = activity.duration_minutes % 60;
+      const duration = hours > 0 ? `${hours}j ${minutes}m` : `${minutes} menit`;
+
+      // Gunakan pre-formatted date dari backend
+      const formattedDate = activity.log_date_formatted || activity.log_date;
 
       const activityItem = document.createElement("div");
-      activityItem.className = "activity-item";
+      activityItem.className = "activity-item cursor-pointer";
+      activityItem.onclick = () => openEditModalWithData(activity);
+
       activityItem.innerHTML = `
-        <div class="bg-white p-2 rounded">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-navy" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.669 0-3.218.51-4.5 1.385V4.804z" />
-          </svg>
-        </div>
-        <div class="flex-1">
-          <p class="font-semibold text-sm">${topic}</p>
-          <p class="text-xs opacity-80">${
-            hours > 0 ? hours + " jam " : ""
-          }${minutes} menit</p>
-          <p class="text-xs opacity-60">${formatDate(logDate)}</p>
-        </div>
-      `;
+      <div class="bg-white p-2 rounded">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-navy" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.669 0-3.218.51-4.5 1.385V4.804z" />
+        </svg>
+      </div>
+      <div class="flex-1">
+        <p class="font-semibold text-sm">${activity.topic}</p>
+        <p class="text-xs opacity-80">${duration}</p>
+        <p class="text-xs opacity-60">${formattedDate}</p>
+      </div>
+    `;
+
       recentActivitiesContainer.appendChild(activityItem);
     });
   }
 
-  // Fungsi untuk update statistik
-  function updateStatistics(logs) {
-    console.log("Updating statistics with logs:", logs);
+  // Fungsi untuk render calendar dengan data heatmap - FIXED
+  function renderCalendarWithHeatmap() {
+    if (!heatmapData || !heatmapContainer) return;
 
-    if (!Array.isArray(logs)) {
-      console.error("Logs is not an array");
-      return;
-    }
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-    let totalMonthMinutes = 0;
-    let todayMinutes = 0;
-
-    // Hitung total menit dan hari ini
-    logs.forEach((log) => {
-      try {
-        const logDate = new Date(log.log_date || log.created_at);
-        const durationMinutes = parseInt(log.duration_minutes) || 0;
-
-        console.log(
-          `Processing log: date=${logDate.toDateString()}, minutes=${durationMinutes}`
-        );
-
-        if (
-          logDate.getMonth() === currentMonth &&
-          logDate.getFullYear() === currentYear
-        ) {
-          totalMonthMinutes += durationMinutes;
-        }
-
-        // Check if log date is today
-        const logDateOnly = new Date(logDate);
-        logDateOnly.setHours(0, 0, 0, 0);
-
-        if (logDateOnly.getTime() === today.getTime()) {
-          todayMinutes += durationMinutes;
-          console.log(`Today's log found: ${durationMinutes} minutes`);
-        }
-      } catch (e) {
-        console.warn("Error processing log:", log, e);
-      }
-    });
-
-    console.log("Statistics calculated:", {
-      totalMonthMinutes,
-      todayMinutes,
-    });
-
-    // Hitung streak
-    const streak = calculateStreak(logs);
-    console.log("Streak calculated:", streak);
-
-    // Update UI
-    if (totalHoursElement) {
-      const totalHours = Math.floor(totalMonthMinutes / 60);
-      const remainingMinutes = totalMonthMinutes % 60;
-      const text =
-        totalHours > 0
-          ? `${totalHours} jam ${
-              remainingMinutes > 0 ? remainingMinutes + " menit" : ""
-            }`
-          : `${remainingMinutes} menit`;
-      totalHoursElement.textContent = text;
-      console.log("Updated total hours:", text);
-    }
-
-    if (todaySessionElement) {
-      const todayHours = Math.floor(todayMinutes / 60);
-      const remainingMinutes = todayMinutes % 60;
-      const text =
-        todayMinutes > 0
-          ? todayHours > 0
-            ? `${todayHours} jam ${
-                remainingMinutes > 0 ? remainingMinutes + " menit" : ""
-              }`
-            : `${remainingMinutes} menit`
-          : "0 jam";
-      todaySessionElement.textContent = text;
-      console.log("Updated today session:", text);
-    }
-
-    if (longestStreakElement) {
-      longestStreakElement.textContent = `${streak} Hari`;
-      console.log("Updated streak:", `${streak} Hari`);
-    }
-  }
-
-  // Fungsi untuk menghitung streak
-  function calculateStreak(logs) {
-    if (!logs || logs.length === 0) {
-      console.log("No logs available");
-      return 0;
-    }
-
-    const getDateKey = (date) => {
-      const d = new Date(date);
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    };
-
-    // Get today's date key
-    const today = new Date();
-    const todayKey = getDateKey(today);
-
-    // Build set of dates that have logs
-    const datesWithLogs = new Set();
-
-    logs.forEach((log) => {
-      const dateKey = getDateKey(log.log_date);
-      datesWithLogs.add(dateKey);
-    });
-
-    console.log("Today:", todayKey);
-    console.log("Dates with logs:", Array.from(datesWithLogs).sort());
-
-    // Calculate streak starting from today
-    let streak = 0;
-    let currentDate = new Date(today);
-
-    // Check consecutive days backwards from today
-    while (true) {
-      const dateKey = getDateKey(currentDate);
-
-      if (datesWithLogs.has(dateKey)) {
-        streak++;
-        // Move to previous day
-        currentDate.setDate(currentDate.getDate() - 1);
-      } else {
-        // No log for this date, streak ends
-        break;
-      }
-    }
-
-    console.log("Final streak:", streak);
-    return streak;
-  }
-
-  // Fungsi untuk render calendar
-  function renderCalendar(logs) {
     const monthNames = [
       "Januari",
       "Februari",
@@ -363,44 +311,55 @@ document.addEventListener("DOMContentLoaded", async () => {
       monthDisplay.textContent = `${monthNames[currentMonth]} ${currentYear}`;
     }
 
-    // Update current date info
-    updateCurrentDateInfo();
-
     // Clear existing calendar
-    if (!heatmapContainer) return;
     heatmapContainer.innerHTML = "";
 
     // Get first day of month (adjust for Monday start)
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-    const adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1; // Convert Sunday (0) to 6, Monday (1) to 0
+    const adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1;
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
     const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
 
-    // Today's date for comparison
-    const today = new Date();
+    // Get today's date in WIB
+    const todayWIB = getLocalToday();
+    const [todayYear, todayMonth, todayDay] = todayWIB
+      .split("-")
+      .map((num) => parseInt(num));
+
     const isCurrentMonth =
-      today.getMonth() === currentMonth && today.getFullYear() === currentYear;
-    const todayDate = today.getDate();
+      todayMonth - 1 === currentMonth && todayYear === currentYear;
+    const todayDate = todayDay;
 
-    // Process logs for current month
-    const monthLogs = logs.filter((log) => {
-      const logDate = new Date(log.log_date || log.created_at);
-      return (
-        logDate.getMonth() === currentMonth &&
-        logDate.getFullYear() === currentYear
-      );
-    });
+    console.log("Calendar render - Today WIB:", todayWIB);
+    console.log(
+      "Calendar render - Current viewing:",
+      monthNames[currentMonth],
+      currentYear
+    );
+    console.log("Calendar render - Is current month:", isCurrentMonth);
 
-    // Create a map of dates to minutes
-    const dateMinutesMap = {};
-    monthLogs.forEach((log) => {
-      const logDate = new Date(log.log_date || log.created_at);
-      const dateKey = logDate.getDate();
-      if (!dateMinutesMap[dateKey]) {
-        dateMinutesMap[dateKey] = 0;
+    // Create date map from heatmap data
+    const dateIntensityMap = {};
+    heatmapData.heatmap.forEach((item) => {
+      // Parse date string directly
+      const [itemYear, itemMonth, itemDay] = item.date
+        .split("-")
+        .map((num) => parseInt(num));
+
+      if (itemMonth - 1 === currentMonth && itemYear === currentYear) {
+        dateIntensityMap[itemDay] = {
+          intensity: item.intensity,
+          minutes: item.total_minutes,
+          sessions: item.session_count,
+        };
+        console.log(
+          `Heatmap entry for day ${itemDay}:`,
+          dateIntensityMap[itemDay]
+        );
       }
-      dateMinutesMap[dateKey] += parseInt(log.duration_minutes || 0);
     });
+
+    console.log("Date intensity map:", dateIntensityMap);
 
     // Add days from previous month
     for (let i = adjustedFirstDay - 1; i >= 0; i--) {
@@ -419,40 +378,49 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       // Check if this is today
       if (isCurrentMonth && day === todayDate) {
-        dayElement.classList.add("ring-2", "ring-navy", "font-bold");
+        dayElement.classList.add("ring-2", "font-bold");
+        dayElement.style.boxShadow = "0 0 0 2px #1e3a5f";
       }
 
-      // Check if this day has study data
-      const minutes = dateMinutesMap[day] || 0;
-      if (minutes > 0) {
-        const intensity = getIntensityColor(minutes);
-        dayElement.style.backgroundColor = intensity;
-        dayElement.classList.add("text-white");
-        const hours = Math.floor(minutes / 60);
-        const mins = minutes % 60;
-        dayElement.title = `${day} ${monthNames[currentMonth]} - ${
-          hours > 0 ? hours + " jam " : ""
-        }${mins} menit belajar`;
+      // Check if this is a future date
+      const cellDateStr = `${currentYear}-${String(currentMonth + 1).padStart(
+        2,
+        "0"
+      )}-${String(day).padStart(2, "0")}`;
+      const isFutureDate = cellDateStr > todayWIB;
+
+      if (isFutureDate) {
+        dayElement.classList.add("opacity-50");
+        dayElement.style.cursor = "not-allowed";
+        dayElement.title = "Tidak bisa mengisi sesi untuk masa depan";
       } else {
-        dayElement.style.backgroundColor = "#f3f4f6";
-        dayElement.title = `${day} ${monthNames[currentMonth]} - Tidak ada sesi belajar`;
-      }
+        // Apply intensity color
+        const dayData = dateIntensityMap[day];
+        if (dayData && dayData.intensity > 0) {
+          const color = getIntensityColorByLevel(dayData.intensity);
+          dayElement.style.backgroundColor = color;
+          dayElement.classList.add("text-white");
 
-      // Add click handler to show details
-      dayElement.addEventListener("click", () => {
-        showDayDetails(
-          day,
-          monthLogs.filter((log) => {
-            const logDate = new Date(log.log_date || log.created_at);
-            return logDate.getDate() === day;
-          })
-        );
-      });
+          const hours = Math.floor(dayData.minutes / 60);
+          const mins = dayData.minutes % 60;
+          dayElement.title = `${day} ${monthNames[currentMonth]} - ${
+            hours > 0 ? hours + " jam " : ""
+          }${mins} menit (${dayData.sessions} sesi)`;
+        } else {
+          dayElement.style.backgroundColor = "#f3f4f6";
+          dayElement.title = `${day} ${monthNames[currentMonth]} - Tidak ada sesi belajar`;
+        }
+
+        // Add click handler to show details
+        dayElement.addEventListener("click", () => {
+          showDayDetails(day, currentMonth, currentYear);
+        });
+      }
 
       heatmapContainer.appendChild(dayElement);
     }
 
-    // Add days from next month to complete the grid
+    // Add remaining cells
     const totalCells = adjustedFirstDay + daysInMonth;
     const remainingCells = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
     for (let day = 1; day <= remainingCells; day++) {
@@ -463,61 +431,32 @@ document.addEventListener("DOMContentLoaded", async () => {
       heatmapContainer.appendChild(dayElement);
     }
 
-    // Update month statistics
-    updateMonthStatistics(monthLogs);
-  }
-
-  // Fungsi untuk update info tanggal saat ini
-  function updateCurrentDateInfo() {
-    const dateInfoElement = document.querySelector(".current-date-info");
-    if (!dateInfoElement) {
-      // Create date info element if it doesn't exist
-      const calendarHeader = document.querySelector(".calendar-header");
-      if (calendarHeader) {
-        const dateInfo = document.createElement("div");
-        dateInfo.className =
-          "current-date-info text-xs md:text-sm text-gray-600 mt-2";
-        calendarHeader.appendChild(dateInfo);
-      }
-    }
-
-    const today = new Date();
-    const dayNames = [
-      "Minggu",
-      "Senin",
-      "Selasa",
-      "Rabu",
-      "Kamis",
-      "Jumat",
-      "Sabtu",
-    ];
-    const monthNames = [
-      "Januari",
-      "Februari",
-      "Maret",
-      "April",
-      "Mei",
-      "Juni",
-      "Juli",
-      "Agustus",
-      "September",
-      "Oktober",
-      "November",
-      "Desember",
-    ];
-
-    const dateInfoElement2 = document.querySelector(".current-date-info");
-    if (dateInfoElement2) {
-      dateInfoElement2.textContent = `Hari ini: ${
-        dayNames[today.getDay()]
-      }, ${today.getDate()} ${
-        monthNames[today.getMonth()]
-      } ${today.getFullYear()}`;
+    // Update statistics if available
+    if (heatmapData.stats) {
+      updateMonthStatisticsFromHeatmap(heatmapData.stats);
     }
   }
 
-  // Fungsi untuk update statistik bulanan
-  function updateMonthStatistics(monthLogs) {
+  // Fungsi untuk mendapatkan warna berdasarkan intensity level
+  function getIntensityColorByLevel(intensity) {
+    switch (intensity) {
+      case 0:
+        return "#f3f4f6";
+      case 1:
+        return "#86efac"; // 1-30 minutes (light)
+      case 2:
+        return "#4ade80"; // 31-60 minutes (moderate)
+      case 3:
+        return "#22c55e"; // 61-120 minutes (high)
+      case 4:
+        return "#16a34a"; // >120 minutes (very high)
+      default:
+        return "#f3f4f6";
+    }
+  }
+
+  // Fungsi untuk update statistik bulanan dari heatmap data
+  function updateMonthStatisticsFromHeatmap(stats) {
     const statsElement = document.querySelector(".month-stats");
     if (!statsElement) {
       // Create stats element if it doesn't exist
@@ -525,31 +464,16 @@ document.addEventListener("DOMContentLoaded", async () => {
         ".card:has(#heatmapCalendar)"
       );
       if (calendarCard) {
-        const stats = document.createElement("div");
-        stats.className = "month-stats mt-4 p-4 bg-gray-50 rounded-lg";
+        const statsDiv = document.createElement("div");
+        statsDiv.className = "month-stats mt-4 p-4 bg-gray-50 rounded-lg";
         const legend = calendarCard.querySelector(".mt-4");
         if (legend) {
-          calendarCard.insertBefore(stats, legend);
+          calendarCard.insertBefore(statsDiv, legend);
         } else {
-          calendarCard.appendChild(stats);
+          calendarCard.appendChild(statsDiv);
         }
       }
     }
-
-    let totalMinutes = 0;
-    let totalSessions = monthLogs.length;
-    let studyDays = new Set();
-
-    monthLogs.forEach((log) => {
-      totalMinutes += parseInt(log.duration_minutes || 0);
-      const logDate = new Date(log.log_date || log.created_at);
-      studyDays.add(logDate.getDate());
-    });
-
-    const totalHours = Math.floor(totalMinutes / 60);
-    const remainingMinutes = totalMinutes % 60;
-    const avgMinutesPerDay =
-      studyDays.size > 0 ? Math.round(totalMinutes / studyDays.size) : 0;
 
     const statsElement2 = document.querySelector(".month-stats");
     if (statsElement2) {
@@ -557,47 +481,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           <div>
             <p class="text-xs text-gray-600">Total Waktu</p>
-            <p class="font-semibold text-navy text-sm">${totalHours}j ${remainingMinutes}m</p>
-          </div>
-          <div>
-            <p class="text-xs text-gray-600">Total Sesi</p>
-            <p class="font-semibold text-navy text-sm">${totalSessions}</p>
+            <p class="font-semibold text-navy text-sm">${stats.total_study_time.formatted}</p>
           </div>
           <div>
             <p class="text-xs text-gray-600">Hari Belajar</p>
-            <p class="font-semibold text-navy text-sm">${
-              studyDays.size
-            } hari</p>
+            <p class="font-semibold text-navy text-sm">${stats.total_days_studied} hari</p>
           </div>
           <div>
             <p class="text-xs text-gray-600">Rata-rata/Hari</p>
-            <p class="font-semibold text-navy text-sm">${Math.floor(
-              avgMinutesPerDay / 60
-            )}j ${avgMinutesPerDay % 60}m</p>
+            <p class="font-semibold text-navy text-sm">${stats.average_per_day.formatted}</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-600">Streak Saat Ini</p>
+            <p class="font-semibold text-navy text-sm">${stats.current_streak} hari</p>
           </div>
         </div>
       `;
     }
   }
 
-  // Fungsi untuk menampilkan detail hari
-  function showDayDetails(day, dayLogs) {
-    const monthNames = [
-      "Januari",
-      "Februari",
-      "Maret",
-      "April",
-      "Mei",
-      "Juni",
-      "Juli",
-      "Agustus",
-      "September",
-      "Oktober",
-      "November",
-      "Desember",
-    ];
-
-    let content = `<h3 class="font-bold text-lg mb-3">${day} ${monthNames[currentMonth]} ${currentYear}</h3>`;
+  function displayDayDetails(day, monthName, year, dayLogs) {
+    let content = `<h3 class="font-bold text-lg mb-3">${day} ${monthName} ${year}</h3>`;
 
     if (dayLogs.length === 0) {
       content +=
@@ -607,24 +511,26 @@ document.addEventListener("DOMContentLoaded", async () => {
       dayLogs.forEach((log) => {
         const hours = Math.floor(log.duration_minutes / 60);
         const minutes = log.duration_minutes % 60;
+        // Gunakan log_date langsung tanpa parsing Date object
         content += `
-          <div class="p-3 bg-gray-50 rounded-lg">
-            <p class="font-semibold">${log.topic}</p>
-            <p class="text-sm text-gray-600">${
-              hours > 0 ? hours + " jam " : ""
-            }${minutes} menit</p>
-            ${
-              log.notes
-                ? `<p class="text-sm text-gray-500 mt-1">${log.notes}</p>`
-                : ""
-            }
-          </div>
-        `;
+        <div class="p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100" onclick="window.openEditModalFromDetail(${JSON.stringify(
+          JSON.stringify(log)
+        )})">
+          <p class="font-semibold">${log.topic}</p>
+          <p class="text-sm text-gray-600">${
+            hours > 0 ? hours + " jam " : ""
+          }${minutes} menit</p>
+          ${
+            log.notes
+              ? `<p class="text-sm text-gray-500 mt-1">${log.notes}</p>`
+              : ""
+          }
+        </div>
+      `;
       });
       content += "</div>";
     }
 
-    // Replace alert with SweetAlert2
     Swal.fire({
       html: content,
       confirmButtonColor: "#1e3a5f",
@@ -634,6 +540,126 @@ document.addEventListener("DOMContentLoaded", async () => {
         popup: "text-left",
       },
     });
+  }
+
+  // Fungsi untuk menampilkan detail hari - FIXED
+  async function showDayDetails(day, month, year) {
+    const token = getToken();
+    if (!token) return;
+
+    const monthNames = [
+      "Januari",
+      "Februari",
+      "Maret",
+      "April",
+      "Mei",
+      "Juni",
+      "Juli",
+      "Agustus",
+      "September",
+      "Oktober",
+      "November",
+      "Desember",
+    ];
+
+    try {
+      // Format date for API
+      const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+        day
+      ).padStart(2, "0")}`;
+
+      console.log("=== SHOW DAY DETAILS DEBUG ===");
+      console.log("Requested date:", dateStr);
+
+      // Try fetching with date filter first
+      const response = await fetch(
+        `${API_BASE_URL}/study-logs/by-date?date=${dateStr}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        console.log("by-date endpoint failed, trying regular endpoint...");
+        // Fallback to regular endpoint
+        const fallbackResponse = await fetch(
+          `${API_BASE_URL}/study-logs?per_page=100`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json",
+            },
+          }
+        );
+
+        if (!fallbackResponse.ok) throw new Error("Failed to load logs");
+
+        const result = await fallbackResponse.json();
+        const allLogs = result.data.data;
+
+        console.log("Total logs fetched:", allLogs.length);
+        console.log(
+          "First 5 logs:",
+          allLogs.slice(0, 5).map((log) => ({
+            date: log.log_date,
+            topic: log.topic,
+          }))
+        );
+
+        // Filter logs for specific date
+        const dayLogs = allLogs.filter((log) => {
+          const match = log.log_date === dateStr;
+          return match;
+        });
+
+        console.log(`Logs matching ${dateStr}:`, dayLogs.length);
+        if (dayLogs.length > 0) {
+          console.log("Matching logs:", dayLogs);
+        }
+
+        displayDayDetails(day, monthNames[month], year, dayLogs);
+      } else {
+        const result = await response.json();
+        const dayLogs = result.data.logs || [];
+        console.log("Logs from by-date endpoint:", dayLogs.length);
+        displayDayDetails(day, monthNames[month], year, dayLogs);
+      }
+    } catch (error) {
+      console.error("Error loading day details:", error);
+      Swal.fire("Error", "Gagal memuat detail hari", "error");
+    }
+  }
+
+  // Function to open edit modal from detail popup
+  window.openEditModalFromDetail = function (logJsonStr) {
+    const log = JSON.parse(logJsonStr);
+    Swal.close();
+    setTimeout(() => {
+      openEditModalWithData(log);
+    }, 300);
+  };
+
+  // Fungsi untuk membuka modal edit dengan data
+  function openEditModalWithData(log) {
+    currentEditLogId = log.id;
+
+    // Populate form fields
+    document.getElementById("editLogId").value = log.id;
+    document.getElementById("editTopic").value = log.topic;
+
+    const hours = Math.floor(log.duration_minutes / 60);
+    const minutes = log.duration_minutes % 60;
+    document.getElementById("editHours").value = hours;
+    document.getElementById("editMinutes").value = minutes;
+
+    document.getElementById("editDate").value = log.log_date;
+    document.getElementById("editNotes").value = log.notes || "";
+
+    // Open modal
+    window.openEditModal(log.id);
   }
 
   // Setup calendar navigation
@@ -650,7 +676,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           currentMonth = 11;
           currentYear--;
         }
-        loadDashboardData(true); // Only update calendar
+        loadHeatmapData(); // Reload heatmap for new month
       });
     }
 
@@ -662,40 +688,20 @@ document.addEventListener("DOMContentLoaded", async () => {
           currentMonth = 0;
           currentYear++;
         }
-        loadDashboardData(true); // Only update calendar
+        loadHeatmapData(); // Reload heatmap for new month
       });
     }
 
     if (todayButton && !todayButton.hasAttribute("data-listener")) {
       todayButton.setAttribute("data-listener", "true");
       todayButton.addEventListener("click", () => {
-        const today = new Date();
-        currentMonth = today.getMonth();
-        currentYear = today.getFullYear();
-        loadDashboardData(true); // Only update calendar
+        const todayWIB = getLocalToday();
+        const [year, month] = todayWIB.split("-").map((num) => parseInt(num));
+        currentMonth = month - 1; // JavaScript months are 0-indexed
+        currentYear = year;
+        loadHeatmapData(); // Reload heatmap for current month
       });
     }
-  }
-
-  // Fungsi untuk menentukan intensitas warna
-  function getIntensityColor(minutes) {
-    const hours = minutes / 60;
-    if (hours === 0) return "#f3f4f6";
-    if (hours < 1) return "#86efac";
-    if (hours < 3) return "#4ade80";
-    if (hours < 5) return "#22c55e";
-    return "#16a34a";
-  }
-
-  // Fungsi format tanggal
-  function formatDate(date) {
-    const options = {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    };
-    return date.toLocaleDateString("id-ID", options);
   }
 
   // Event listener untuk form "Catat Sesi"
@@ -720,11 +726,28 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
+      const selectedDate = formData.get("date");
+      const today = getLocalToday();
+
+      console.log("Form submission - Selected date:", selectedDate);
+      console.log("Form submission - Today WIB:", today);
+
+      // Validate date is not in the future
+      if (selectedDate > today) {
+        Swal.fire({
+          icon: "warning",
+          title: "Tanggal Tidak Valid",
+          text: "Tidak bisa mengisi sesi belajar untuk masa depan!",
+          confirmButtonColor: "#1e3a5f",
+        });
+        return;
+      }
+
       // Sesuaikan format data dengan StudyLogController
       const logData = {
         topic: formData.get("topic"),
         duration_minutes: totalMinutes,
-        log_date: formData.get("date"),
+        log_date: selectedDate,
         notes: formData.get("notes") || null,
       };
 
@@ -768,12 +791,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         sessionForm.reset();
 
         // Set default date ke hari ini lagi
-        const dateInput = document.getElementById("date");
-        if (dateInput) {
-          dateInput.valueAsDate = new Date();
-        }
+        setMaxDateToToday();
 
-        loadDashboardData();
+        // Reload all dashboard data
+        await Promise.all([
+          loadDashboardStats(),
+          loadHeatmapData(),
+          loadRecentActivities(),
+        ]);
 
         // Tutup modal
         const closeModalBtn = document.getElementById("closeModalBtn");
@@ -792,6 +817,138 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
   }
+
+  // Event listener untuk form edit
+  if (editForm) {
+    editForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(editForm);
+      const logId = document.getElementById("editLogId").value;
+
+      // Konversi jam dan menit ke total menit
+      const hours = parseInt(formData.get("hours")) || 0;
+      const minutes = parseInt(formData.get("minutes")) || 0;
+      const totalMinutes = hours * 60 + minutes;
+
+      if (totalMinutes === 0) {
+        Swal.fire({
+          icon: "warning",
+          title: "Durasi Kosong",
+          text: "Durasi belajar harus diisi!",
+          confirmButtonColor: "#1e3a5f",
+        });
+        return;
+      }
+
+      const selectedDate = formData.get("date");
+      const today = getLocalToday();
+
+      // Validate date is not in the future
+      if (selectedDate > today) {
+        Swal.fire({
+          icon: "warning",
+          title: "Tanggal Tidak Valid",
+          text: "Tidak bisa mengisi sesi belajar untuk masa depan!",
+          confirmButtonColor: "#1e3a5f",
+        });
+        return;
+      }
+
+      const updateData = {
+        topic: formData.get("topic"),
+        duration_minutes: totalMinutes,
+        log_date: selectedDate,
+        notes: formData.get("notes") || null,
+      };
+
+      try {
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        submitBtn.textContent = "Menyimpan...";
+        submitBtn.disabled = true;
+
+        await updateLog(logId, updateData);
+
+        Swal.fire({
+          icon: "success",
+          title: "Berhasil!",
+          text: "Sesi berhasil diperbarui!",
+          confirmButtonColor: "#1e3a5f",
+          timer: 2000,
+          timerProgressBar: true,
+        });
+
+        // Reload all dashboard data
+        await Promise.all([
+          loadDashboardStats(),
+          loadHeatmapData(),
+          loadRecentActivities(),
+        ]);
+
+        // Tutup modal
+        window.closeEditModal();
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Gagal Menyimpan",
+          text: error.message,
+          confirmButtonColor: "#1e3a5f",
+        });
+      } finally {
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        submitBtn.textContent = "Simpan Perubahan";
+        submitBtn.disabled = false;
+      }
+    });
+  }
+
+  // Delete log function
+  window.deleteLog = async function () {
+    if (!currentEditLogId) return;
+
+    Swal.fire({
+      title: "Konfirmasi Hapus",
+      text: "Apakah Anda yakin ingin menghapus sesi belajar ini?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Ya, Hapus",
+      cancelButtonText: "Batal",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await apiDeleteLog(currentEditLogId);
+
+          Swal.fire({
+            icon: "success",
+            title: "Berhasil!",
+            text: "Sesi belajar berhasil dihapus!",
+            confirmButtonColor: "#1e3a5f",
+            timer: 2000,
+            timerProgressBar: true,
+          });
+
+          // Reload all dashboard data
+          await Promise.all([
+            loadDashboardStats(),
+            loadHeatmapData(),
+            loadRecentActivities(),
+          ]);
+
+          // Close modal
+          window.closeEditModal();
+        } catch (error) {
+          Swal.fire({
+            icon: "error",
+            title: "Gagal Menghapus",
+            text: error.message,
+            confirmButtonColor: "#1e3a5f",
+          });
+        }
+      }
+    });
+  };
 
   // Event listener untuk logout
   if (logoutButton) {
@@ -826,10 +983,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // Muat data saat halaman pertama kali dibuka
-  loadDashboardData();
-  setupCalendarNavigation();
+  // Initialize dashboard
+  async function initializeDashboard() {
+    try {
+      console.log("Initializing dashboard...");
+      console.log("Today WIB from getLocalToday():", getLocalToday());
 
-  // Refresh data setiap 60 detik
-  setInterval(() => loadDashboardData(false), 60000);
+      // Load all data in parallel
+      await Promise.all([
+        loadDashboardStats(),
+        loadHeatmapData(),
+        loadRecentActivities(),
+      ]);
+
+      setupCalendarNavigation();
+
+      // Auto refresh setiap 30 detik
+      setInterval(async () => {
+        await Promise.all([loadDashboardStats(), loadRecentActivities()]);
+      }, 30000);
+    } catch (error) {
+      console.error("Error initializing dashboard:", error);
+    }
+  }
+
+  // Start initialization
+  initializeDashboard();
 });

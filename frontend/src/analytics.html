@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Analytics | Learn.in Path</title>
+
+    <!-- Memuat Font Inter dari Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Memuat file CSS yang dihasilkan Tailwind -->
+    <link href="../dist/output.css" rel="stylesheet" />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- SweetAlert2 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #e8e8e8;
+      }
+      .bg-navy {
+        background-color: #1e3a5f;
+      }
+      .text-navy {
+        color: #1e3a5f;
+      }
+      .btn-navy {
+        background-color: #1e3a5f;
+        color: white;
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      .btn-navy:hover {
+        background-color: #152d4a;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .card {
+        background-color: white;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+      }
+      .card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      }
+      .stat-card {
+        background-color: white;
+        border: 2px solid #e5e7eb;
+        padding: 24px;
+        border-radius: 12px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+      .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      .stat-card.primary {
+        border-color: #1e3a5f;
+      }
+      .stat-card.blue {
+        border-color: #3b82f6;
+      }
+      .stat-card.green {
+        border-color: #10b981;
+      }
+
+      /* Loading animation */
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #f3f3f3;
+        border-radius: 50%;
+        border-top-color: #1e3a5f;
+        animation: spin 1s ease-in-out infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Chart container animations */
+      .chart-container {
+        position: relative;
+        height: 300px;
+      }
+
+      /* Period selector styles */
+      .period-btn {
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        background-color: #f3f4f6;
+        color: #4b5563;
+        cursor: pointer;
+      }
+      .period-btn:hover {
+        background-color: #e5e7eb;
+      }
+      .period-btn.active {
+        background-color: #1e3a5f;
+        color: white;
+      }
+
+      /* Mobile menu styles */
+      .mobile-menu {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 50;
+      }
+      .mobile-menu.active {
+        display: block;
+      }
+      .mobile-menu-content {
+        background-color: white;
+        width: 80%;
+        max-width: 300px;
+        height: 100%;
+        position: absolute;
+        right: 0;
+        top: 0;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+        box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .mobile-menu.active .mobile-menu-content {
+        transform: translateX(0);
+      }
+
+      /* Mobile responsive */
+      @media (max-width: 640px) {
+        .card {
+          padding: 16px;
+        }
+        .chart-container {
+          height: 250px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="bg-navy text-white">
+      <div class="container mx-auto px-4 py-4">
+        <nav class="flex justify-between items-center">
+          <h1 class="text-lg md:text-xl font-semibold">Learn.in Path</h1>
+
+          <!-- Desktop Navigation -->
+          <div class="hidden md:flex items-center gap-8">
+            <a href="./dasboard_login.html" class="hover:opacity-80 transition"
+              >Dasbor</a
+            >
+            <a href="#" class="opacity-100 font-semibold">Analytics</a>
+            <a href="#" class="hover:opacity-80 transition">Pengaturan</a>
+
+            <div class="flex items-center gap-4">
+              <!-- Notification Icon -->
+              <button class="hover:opacity-80 transition" title="Notifikasi">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                  />
+                </svg>
+              </button>
+
+              <!-- Profile Icon -->
+              <button
+                class="w-10 h-10 bg-white rounded-full flex items-center justify-center"
+                title="Profile"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6 text-navy"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+              </button>
+
+              <!-- Logout Button -->
+              <button
+                id="logoutButton"
+                class="hover:opacity-80 transition"
+                title="Logout"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Mobile Menu Button -->
+          <button id="mobileMenuBtn" class="md:hidden">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu">
+      <div class="mobile-menu-content">
+        <div class="bg-navy text-white p-4">
+          <div class="flex justify-between items-center">
+            <h2 class="text-lg font-semibold">Menu</h2>
+            <button id="closeMobileMenu">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="p-4">
+          <nav class="space-y-4">
+            <a
+              href="./dasboard_login.html"
+              class="block text-gray-700 hover:text-navy"
+              >Dasbor</a
+            >
+            <a
+              href="#"
+              class="block text-gray-700 hover:text-navy font-semibold"
+              >Analytics</a
+            >
+            <a href="#" class="block text-gray-700 hover:text-navy"
+              >Pengaturan</a
+            >
+            <hr class="my-4" />
+            <a href="#" class="block text-gray-700 hover:text-navy">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 inline mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                />
+              </svg>
+              Notifikasi
+            </a>
+            <button
+              id="mobileLogoutButton"
+              class="block w-full text-left text-red-600 hover:text-red-800"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 inline mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+              Logout
+            </button>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-4 md:py-8">
+      <!-- Page Title and Navigation -->
+      <div
+        class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6"
+      >
+        <div>
+          <h1 class="text-2xl md:text-3xl font-bold text-navy mb-2">
+            Analytics Dashboard
+          </h1>
+          <p class="text-gray-600">Lihat perkembangan dan pola belajar Anda</p>
+        </div>
+        <a
+          href="./dasboard_login.html"
+          class="mt-4 sm:mt-0 text-navy hover:text-opacity-80 transition inline-flex items-center"
+        >
+          <i class="fas fa-arrow-left mr-2"></i>
+          Kembali ke Dashboard
+        </a>
+      </div>
+
+      <!-- Period Selector -->
+      <div class="card mb-6">
+        <div
+          class="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+        >
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="font-medium text-gray-700">Periode:</span>
+            <div class="flex flex-wrap gap-2" id="periodButtons">
+              <button class="period-btn" data-period="week">7 Hari</button>
+              <button class="period-btn active" data-period="month">
+                30 Hari
+              </button>
+              <button class="period-btn" data-period="3months">3 Bulan</button>
+              <button class="period-btn" data-period="year">1 Tahun</button>
+            </div>
+          </div>
+          <button
+            onclick="exportData()"
+            class="btn-navy text-sm md:text-base inline-flex items-center"
+          >
+            <i class="fas fa-download mr-2"></i>Export Data
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+        <div class="stat-card primary">
+          <div class="flex items-center justify-center mb-2">
+            <i class="fas fa-clock text-3xl text-navy"></i>
+          </div>
+          <div class="text-3xl font-bold text-navy mb-1" id="totalHours">
+            <div class="loading mx-auto"></div>
+          </div>
+          <div class="text-gray-600 text-sm">Total Jam Belajar</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="flex items-center justify-center mb-2">
+            <i class="fas fa-chart-line text-3xl text-blue-600"></i>
+          </div>
+          <div class="text-3xl font-bold text-blue-600 mb-1" id="avgDaily">
+            <div class="loading mx-auto"></div>
+          </div>
+          <div class="text-gray-600 text-sm">Rata-rata/Hari (menit)</div>
+        </div>
+        <div class="stat-card green">
+          <div class="flex items-center justify-center mb-2">
+            <i class="fas fa-fire text-3xl text-green-600"></i>
+          </div>
+          <div class="text-3xl font-bold text-green-600 mb-1" id="consistency">
+            <div class="loading mx-auto"></div>
+          </div>
+          <div class="text-gray-600 text-sm">Tingkat Konsistensi</div>
+        </div>
+      </div>
+
+      <!-- Charts Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Daily Study Time Chart -->
+        <div class="card">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-navy">
+              Waktu Belajar Harian
+            </h3>
+            <div
+              class="text-sm text-gray-500"
+              title="Waktu belajar per hari dalam periode yang dipilih"
+            >
+              <i class="fas fa-info-circle"></i>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="dailyChart"></canvas>
+          </div>
+          <div class="mt-4 text-center">
+            <p class="text-sm text-gray-600">
+              Total: <span id="dailyTotal" class="font-semibold">0</span> menit
+              periode ini
+            </p>
+          </div>
+        </div>
+
+        <!-- Topic Distribution -->
+        <div class="card">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-navy">Distribusi Topik</h3>
+            <div
+              class="text-sm text-gray-500"
+              title="5 topik teratas yang paling sering dipelajari"
+            >
+              <i class="fas fa-info-circle"></i>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="topicChart"></canvas>
+          </div>
+          <div class="mt-4" id="topicLegend">
+            <!-- Topic percentages will be added here -->
+          </div>
+        </div>
+
+        <!-- Weekly Pattern -->
+        <div class="card">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-navy">
+              Pola Belajar Mingguan
+            </h3>
+            <div
+              class="text-sm text-gray-500"
+              title="Rata-rata waktu belajar per hari dalam seminggu"
+            >
+              <i class="fas fa-info-circle"></i>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="weeklyChart"></canvas>
+          </div>
+          <div class="mt-4 text-center">
+            <p class="text-sm text-gray-600">
+              Hari paling produktif:
+              <span id="mostProductiveDay" class="font-semibold text-navy"
+                >-</span
+              >
+            </p>
+          </div>
+        </div>
+
+        <!-- Study Sessions by Time of Day -->
+        <div class="card">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-navy">
+              Waktu Belajar Favorit
+            </h3>
+            <div
+              class="text-sm text-gray-500"
+              title="Distribusi sesi belajar berdasarkan waktu dalam sehari"
+            >
+              <i class="fas fa-info-circle"></i>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="timeOfDayChart"></canvas>
+          </div>
+          <div class="mt-4 grid grid-cols-4 gap-2 text-center text-xs">
+            <div>
+              <i class="fas fa-sun text-yellow-500"></i>
+              <p>Pagi</p>
+              <p class="font-semibold">6-12</p>
+            </div>
+            <div>
+              <i class="fas fa-cloud-sun text-orange-500"></i>
+              <p>Siang</p>
+              <p class="font-semibold">12-18</p>
+            </div>
+            <div>
+              <i class="fas fa-cloud-moon text-purple-500"></i>
+              <p>Sore</p>
+              <p class="font-semibold">18-22</p>
+            </div>
+            <div>
+              <i class="fas fa-moon text-blue-500"></i>
+              <p>Malam</p>
+              <p class="font-semibold">22-6</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Learning Insights -->
+      <div class="card mt-6">
+        <h3 class="text-lg font-semibold text-navy mb-4">
+          <i class="fas fa-lightbulb mr-2"></i>Insight Pembelajaran
+        </h3>
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          id="insightsContainer"
+        >
+          <div class="p-4 bg-blue-50 rounded-lg">
+            <i class="fas fa-trophy text-blue-600 text-2xl mb-2"></i>
+            <h4 class="font-semibold text-gray-800">Pencapaian Terbaik</h4>
+            <p class="text-sm text-gray-600 mt-1" id="bestAchievement">
+              <span class="loading mx-auto block w-5"></span>
+            </p>
+          </div>
+          <div class="p-4 bg-green-50 rounded-lg">
+            <i class="fas fa-chart-up text-green-600 text-2xl mb-2"></i>
+            <h4 class="font-semibold text-gray-800">Tren Pembelajaran</h4>
+            <p class="text-sm text-gray-600 mt-1" id="learningTrend">
+              <span class="loading mx-auto block w-5"></span>
+            </p>
+          </div>
+          <div class="p-4 bg-purple-50 rounded-lg">
+            <i class="fas fa-bullseye text-purple-600 text-2xl mb-2"></i>
+            <h4 class="font-semibold text-gray-800">Rekomendasi</h4>
+            <p class="text-sm text-gray-600 mt-1" id="recommendation">
+              <span class="loading mx-auto block w-5"></span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
+
+    <!-- Mobile Menu Script -->
+    <script>
+      // Mobile menu functionality
+      const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+      const mobileMenu = document.getElementById("mobileMenu");
+      const closeMobileMenu = document.getElementById("closeMobileMenu");
+      const mobileLogoutButton = document.getElementById("mobileLogoutButton");
+
+      mobileMenuBtn.addEventListener("click", () => {
+        mobileMenu.classList.add("active");
+        document.body.style.overflow = "hidden";
+      });
+
+      closeMobileMenu.addEventListener("click", () => {
+        mobileMenu.classList.remove("active");
+        document.body.style.overflow = "";
+      });
+
+      mobileMenu.addEventListener("click", (event) => {
+        if (event.target === mobileMenu) {
+          mobileMenu.classList.remove("active");
+          document.body.style.overflow = "";
+        }
+      });
+
+      // Mobile logout
+      mobileLogoutButton.addEventListener("click", () => {
+        const logoutButton = document.getElementById("logoutButton");
+        if (logoutButton) {
+          logoutButton.click();
+        }
+      });
+    </script>
+
+    <!-- Analytics Script -->
+    <script type="module" src="./analytics.js"></script>
+  </body>
+</html>

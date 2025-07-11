@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AnalyticsController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\StudyLogController;
@@ -10,11 +11,6 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
 */
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -34,7 +30,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // Study Log routes
     Route::get('/study-logs', [StudyLogController::class, 'index']);
     Route::post('/study-logs', [StudyLogController::class, 'store']);
+    Route::get('/study-logs/by-date', [StudyLogController::class, 'getByDate']);
     Route::get('/study-logs/{id}', [StudyLogController::class, 'show']);
     Route::put('/study-logs/{id}', [StudyLogController::class, 'update']);
     Route::delete('/study-logs/{id}', [StudyLogController::class, 'destroy']);
+
+    // Analytics routes
+    Route::get('/analytics', [AnalyticsController::class, 'index']);
+    Route::get('/analytics/export', [AnalyticsController::class, 'export']);
 });

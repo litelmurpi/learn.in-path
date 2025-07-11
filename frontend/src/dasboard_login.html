@@ -46,6 +46,19 @@
         transform: translateY(-1px);
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       }
+      .btn-red {
+        background-color: #dc2626;
+        color: white;
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+      .btn-red:hover {
+        background-color: #b91c1c;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
       .card {
         background-color: white;
         border-radius: 16px;
@@ -88,6 +101,7 @@
       }
       .activity-item:hover {
         transform: translateX(4px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
       }
       .calendar-day {
         width: 40px;
@@ -237,7 +251,9 @@
           <!-- Desktop Navigation -->
           <div class="hidden md:flex items-center gap-8">
             <a href="#" class="hover:opacity-80 transition">Dasbor</a>
-            <a href="#" class="hover:opacity-80 transition">Laporan</a>
+            <a href="./analytics.html" class="hover:opacity-80 transition"
+              >Analytics</a
+            >
             <a href="#" class="hover:opacity-80 transition">Pengaturan</a>
 
             <div class="flex items-center gap-4">
@@ -351,7 +367,11 @@
         <div class="p-4">
           <nav class="space-y-4">
             <a href="#" class="block text-gray-700 hover:text-navy">Dasbor</a>
-            <a href="#" class="block text-gray-700 hover:text-navy">Laporan</a>
+            <a
+              href="./analytics.html"
+              class="block text-gray-700 hover:text-navy"
+              >Analytics</a
+            >
             <a href="#" class="block text-gray-700 hover:text-navy"
               >Pengaturan</a
             >
@@ -455,7 +475,25 @@
 
         <!-- Main Content Area -->
         <section class="lg:col-span-3 space-y-4 md:space-y-6">
-          <h1 class="text-2xl md:text-3xl font-bold text-navy">Dasbor</h1>
+          <div class="flex justify-between items-center">
+            <h1 class="text-2xl md:text-3xl font-bold text-navy">Dasbor</h1>
+            <a
+              href="./analytics.html"
+              class="btn-navy text-sm md:text-base inline-flex items-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-2"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"
+                />
+              </svg>
+              Lihat Analytics
+            </a>
+          </div>
 
           <!-- Statistics Cards -->
           <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -473,7 +511,7 @@
             </div>
             <div class="stat-card">
               <p class="text-xs md:text-sm opacity-80 mb-2">Sesi Hari Ini</p>
-              <p class="text-2xl md:text-3xl font-bold">0 jam</p>
+              <p class="text-2xl md:text-3xl font-bold">0 Sesi</p>
             </div>
           </div>
 
@@ -594,22 +632,22 @@
                 <div
                   class="w-3 h-3 md:w-4 md:h-4 rounded"
                   style="background-color: #86efac"
-                  title="< 1 jam"
+                  title="1-30 menit"
                 ></div>
                 <div
                   class="w-3 h-3 md:w-4 md:h-4 rounded"
                   style="background-color: #4ade80"
-                  title="1-3 jam"
+                  title="31-60 menit"
                 ></div>
                 <div
                   class="w-3 h-3 md:w-4 md:h-4 rounded"
                   style="background-color: #22c55e"
-                  title="3-5 jam"
+                  title="61-120 menit"
                 ></div>
                 <div
                   class="w-3 h-3 md:w-4 md:h-4 rounded"
                   style="background-color: #16a34a"
-                  title="> 5 jam"
+                  title="> 120 menit"
                 ></div>
               </div>
               <span>Lebih</span>
@@ -619,7 +657,7 @@
       </div>
     </main>
 
-    <!-- Modal Section -->
+    <!-- Modal Section - Create Session -->
     <div
       id="sessionModal"
       class="modal-transition fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 invisible opacity-0 p-4"
@@ -758,6 +796,163 @@
       </div>
     </div>
 
+    <!-- Modal Edit Sesi Belajar -->
+    <div
+      id="editModal"
+      class="modal-transition fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 invisible opacity-0 p-4"
+    >
+      <div
+        id="editModalContent"
+        class="modal-content-transition bg-white rounded-2xl shadow-xl p-6 md:p-8 w-full max-w-lg relative transform scale-95 max-h-[90vh] overflow-y-auto"
+      >
+        <!-- Close Button -->
+        <button
+          id="closeEditModalBtn"
+          class="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 md:h-8 md:w-8"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+
+        <h2 class="text-xl md:text-2xl font-bold text-navy mb-4 md:mb-6">
+          Edit Sesi Belajar
+        </h2>
+
+        <!-- Form -->
+        <form id="editForm" class="space-y-4 md:space-y-5">
+          <input type="hidden" id="editLogId" />
+
+          <div>
+            <label
+              for="editTopic"
+              class="block text-sm md:text-md font-medium text-gray-700 mb-1"
+              >Topik Pembelajaran <span class="text-red-500">*</span></label
+            >
+            <input
+              type="text"
+              id="editTopic"
+              name="topic"
+              class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
+              required
+            />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label
+                for="editHours"
+                class="block text-sm md:text-md font-medium text-gray-700 mb-1"
+                >Jam</label
+              >
+              <input
+                type="number"
+                id="editHours"
+                name="hours"
+                min="0"
+                max="23"
+                class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
+              />
+            </div>
+            <div>
+              <label
+                for="editMinutes"
+                class="block text-sm md:text-md font-medium text-gray-700 mb-1"
+                >Menit <span class="text-red-500">*</span></label
+              >
+              <input
+                type="number"
+                id="editMinutes"
+                name="minutes"
+                min="0"
+                max="59"
+                class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
+                required
+              />
+            </div>
+          </div>
+
+          <div>
+            <label
+              for="editDate"
+              class="block text-sm md:text-md font-medium text-gray-700 mb-1"
+              >Tanggal <span class="text-red-500">*</span></label
+            >
+            <input
+              type="date"
+              id="editDate"
+              name="date"
+              class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
+              required
+            />
+          </div>
+
+          <div>
+            <label
+              for="editNotes"
+              class="block text-sm md:text-md font-medium text-gray-700 mb-1"
+              >Catatan</label
+            >
+            <textarea
+              id="editNotes"
+              name="notes"
+              rows="3"
+              class="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:text-base"
+            ></textarea>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex justify-between gap-3 pt-4">
+            <button
+              type="button"
+              onclick="deleteLog()"
+              class="btn-red text-sm md:text-base inline-flex items-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-2"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              Hapus
+            </button>
+            <div class="flex gap-3">
+              <button
+                type="button"
+                onclick="closeEditModal()"
+                class="bg-gray-200 text-gray-700 font-semibold px-4 md:px-6 py-2 rounded-lg hover:bg-gray-300 transition text-sm md:text-base"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                class="bg-navy text-white font-semibold px-4 md:px-6 py-2 rounded-lg hover:bg-blue-800 transition text-sm md:text-base"
+              >
+                Simpan Perubahan
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
 
@@ -770,6 +965,11 @@
         const modalContent = document.getElementById("modalContent");
         const closeModalBtn = document.getElementById("closeModalBtn");
         const cancelModalBtn = document.getElementById("cancelModalBtn");
+
+        // Edit modal elements
+        const editModal = document.getElementById("editModal");
+        const editModalContent = document.getElementById("editModalContent");
+        const closeEditModalBtn = document.getElementById("closeEditModalBtn");
 
         // Set default date to today
         const dateInput = document.getElementById("date");
@@ -797,14 +997,48 @@
           }, 300);
         };
 
+        // Functions for edit modal
+        window.openEditModal = (logId) => {
+          editModal.classList.remove("invisible");
+          editModal.classList.add("visible");
+          editModal.classList.remove("opacity-0");
+          editModal.classList.add("opacity-100");
+          editModalContent.classList.remove("scale-95");
+          editModalContent.classList.add("scale-100");
+          document.body.style.overflow = "hidden";
+        };
+
+        window.closeEditModal = () => {
+          editModal.classList.remove("opacity-100");
+          editModal.classList.add("opacity-0");
+          editModalContent.classList.remove("scale-100");
+          editModalContent.classList.add("scale-95");
+          document.body.style.overflow = "";
+          setTimeout(() => {
+            editModal.classList.remove("visible");
+            editModal.classList.add("invisible");
+          }, 300);
+        };
+
+        window.deleteLog = () => {
+          // This will be handled by dashboard.js
+        };
+
         openModalBtn.addEventListener("click", openModal);
         closeModalBtn.addEventListener("click", closeModal);
         cancelModalBtn.addEventListener("click", closeModal);
+        closeEditModalBtn.addEventListener("click", closeEditModal);
 
         // Close modal when clicking on the backdrop
         sessionModal.addEventListener("click", (event) => {
           if (event.target === sessionModal) {
             closeModal();
+          }
+        });
+
+        editModal.addEventListener("click", (event) => {
+          if (event.target === editModal) {
+            closeEditModal();
           }
         });
 
